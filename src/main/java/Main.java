@@ -17,9 +17,9 @@ import Util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String inputPath = "/Users/Ken/IdeaProjects/MxCompiler/src/test/test.mx";
+        String inputPath = "./src/test/test.mx";
         InputStream input = args.length > 0 ? System.in : new FileInputStream(inputPath);
-        FileWriter output = new FileWriter("/Users/Ken/IdeaProjects/MxCompiler/src/test/test.ll");
+        FileWriter output = new FileWriter("./src/test/test.ll");
         try {
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();

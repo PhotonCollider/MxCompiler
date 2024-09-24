@@ -26,6 +26,7 @@ import Util.type.Type;
 
 import java.util.ArrayList;
 
+// TODO: check builtin function names in IRBuilder
 public class IRBuilder implements ASTVisitor {
     public final GlobalScope globalScope;
     private SuiteScope curScope;
@@ -34,7 +35,8 @@ public class IRBuilder implements ASTVisitor {
     private IRBasicBlock currentBlock, initBlock;
     private IRValue curExprValue;
     private IRBasicBlock loopEnd, loopCond;
-    private int allocateArrayForId = 0, arrayLiteralCnt = 0, stringLiteralCnt = 0, FStringCnt = 0, logicBinaryCnt = 0, condExprID = 0, namelessVarCnt = 0;
+    private int allocateArrayForId = 0, arrayLiteralCnt = 0, stringLiteralCnt = 0, FStringCnt = 0, logicBinaryCnt = 0,
+            condExprID = 0, namelessVarCnt = 0;
 
     public IRBuilder(GlobalScope globalScope, IRRootNode root) {
         curScope = this.globalScope = globalScope;
@@ -343,14 +345,16 @@ public class IRBuilder implements ASTVisitor {
         } else {
             it.init.accept(this);
             IRLocalVar res = getNamelessVariable(type);
-            currentBlock.body.add(new IRCallInst(res, "array.copy", res, curExprValue));
+            currentBlock.body
+                    .add(new IRCallInst(res, "array.copy", curExprValue, new IRIntConst(((IRPtrType) type).dim)));
             curExprValue = res;
         }
     }
 
     private IRLocalVar allocateEmptyArray(ArrayList<IRValue> fixedSizeList, int depth, IRPtrType type) {
         IRLocalVar ret = getNamelessVariable(type);
-        currentBlock.body.add(new IRCallInst(ret, "builtin.calloc", new IRIntConst(type.dereference().size()), fixedSizeList.get(depth)));
+        currentBlock.body.add(new IRCallInst(ret, "builtin.calloc", new IRIntConst(type.dereference().size()),
+                fixedSizeList.get(depth)));
         if (depth == type.dim - 1) {
             return ret;
         }
@@ -410,10 +414,9 @@ public class IRBuilder implements ASTVisitor {
         curExprValue = res;
     }
 
-
     private IRLocalVar initArrayLiteral(ArrayLiteralNode it) {
         IRLocalVar ret = getNamelessVariable(it.type.toIR());
-        currentBlock.body.add(new IRCallInst(ret, "builtin.malloc", new IRIntConst(it.literals.size()))); // TODO malloc_array??
+        currentBlock.body.add(new IRCallInst(ret, "builtin.malloc_array", new IRIntConst(((IRPtrType)it.type.toIR()).dereference().size()), new IRIntConst(it.literals.size())));
         for (int i = 0; i < it.literals.size(); i++) {
             IRLocalVar ptrToSmallerLiteral = getNamelessVariable(it.type.toIR());
             currentBlock.body.add(new IRGetelementptrInst(ptrToSmallerLiteral, ret, new IRIntConst(i), -1));
@@ -498,8 +501,8 @@ public class IRBuilder implements ASTVisitor {
     public void visit(MemberAccessExprNode it) {
         it.instanceName.accept(this);
         IRValue instance = getValueResult(it.instanceName.isLeft);
-        int id = root.structDefMap.get(((IRStructType) ((IRPtrType) instance.type).base).name)
-                .struct.varToIdMap.get(it.member);
+        int id = root.structDefMap.get(((IRStructType) ((IRPtrType) instance.type).base).name).struct.varToIdMap
+                .get(it.member);
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
         currentBlock.body.add(new IRGetelementptrInst(res, instance, null, id));
         curExprValue = res;
@@ -558,7 +561,7 @@ public class IRBuilder implements ASTVisitor {
                     currentBlock.body.add(new IRBinaryInst(res, lhsValue, rhsValue, "add"));
                 } else { // string addition
                     res = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-                    currentBlock.body.add(new IRCallInst(res, "string.add", lhsValue, rhsValue));
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string.add", lhsValue, rhsValue));
                 }
                 break;
             case "-":
@@ -727,11 +730,11 @@ public class IRBuilder implements ASTVisitor {
             IRValue value = getValueResult(expr.isLeft);
             if (expr.type.name.equals("bool")) {
                 IRLocalVar IRExpr = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-                currentBlock.body.add(new IRCallInst(IRExpr, "builtin.bool_to_str", value));
+                currentBlock.body.add(new IRCallInst(IRExpr, "builtin.bool_to_string", value));
                 exprList.add(IRExpr);
             } else if (expr.type.name.equals("int")) {
                 IRLocalVar IRExpr = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-                currentBlock.body.add(new IRCallInst(IRExpr, "builtin.int_to_str", value));
+                currentBlock.body.add(new IRCallInst(IRExpr, "toString", value));
                 exprList.add(IRExpr);
             } else { // expr.type.name.equals("string")
                 exprList.add(value);
@@ -739,9 +742,9 @@ public class IRBuilder implements ASTVisitor {
         }
         for (int i = 0; i < exprList.size(); i++) {
             IRLocalVar tmp = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-            currentBlock.body.add(new IRCallInst(tmp, "string_add", res, exprList.get(i)));
+            currentBlock.body.add(new IRCallInst(tmp, "builtin.string.add", res, exprList.get(i)));
             res = (IRValue) getNamelessVariable(new IRPtrType(new IRIntType(8)));
-            currentBlock.body.add(new IRCallInst((IRLocalVar) res, "string_add", tmp, strList.get(i + 1)));
+            currentBlock.body.add(new IRCallInst((IRLocalVar) res, "builtin.string.add", tmp, strList.get(i + 1)));
         }
         FStringCnt++;
         curExprValue = res;
@@ -750,10 +753,8 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(IdentifierNode it) {
         if (curScope.getClassName() != null) { // class member var
-            if (root.structDefMap.get(curScope.getClassName())
-                    .struct.varToIdMap.containsKey(it.name)) { // this.member
-                Integer id = root.structDefMap.get(curScope.getClassName())
-                        .struct.varToIdMap.get(it.name);
+            if (root.structDefMap.get(curScope.getClassName()).struct.varToIdMap.containsKey(it.name)) { // this.member
+                Integer id = root.structDefMap.get(curScope.getClassName()).struct.varToIdMap.get(it.name);
                 IRValue thiss = currentBlock.func.args.get(0);
                 IRLocalVar ptr = getNamelessVariable(new IRPtrType(it.type.toIR()));
                 currentBlock.body.add(new IRGetelementptrInst(ptr, thiss, null, id));
@@ -772,7 +773,8 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(StringLiteralNode it) {
-        IRGlobalVar globalVar = (IRGlobalVar) globalScope.IRAddVar("stringLiteral." + stringLiteralCnt, new IRPtrType(new IRIntType(8))); // a char, actually
+        IRGlobalVar globalVar = (IRGlobalVar) globalScope.IRAddVar("stringLiteral." + stringLiteralCnt,
+                new IRPtrType(new IRIntType(8))); // a char, actually
         stringLiteralCnt++;
         root.stringLiterals.add(new IRStringLiteralDef(globalVar, it.str));
         curExprValue = globalVar;

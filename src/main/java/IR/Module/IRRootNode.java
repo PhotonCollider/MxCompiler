@@ -32,9 +32,9 @@ public class IRRootNode extends IRNode {
         funcDecls.add(new IRFuncDecl("printlnInt", new IRVoidType(), new IRIntType(32)));
         funcDecls.add(new IRFuncDecl("getString", new IRPtrType(new IRIntType(8))));
         funcDecls.add(new IRFuncDecl("getInt", new IRIntType(32)));
-        funcDecls.add(new IRFuncDecl("toString", new IRPtrType(new IRIntType(8))));
+        funcDecls.add(new IRFuncDecl("toString", new IRPtrType(new IRIntType(8)), new IRIntType(32)));
         funcDecls.add(
-                new IRFuncDecl("array.copy", new IRPtrType(), new IRPtrType(), new IRIntType(32), new IRIntType(32)));
+                new IRFuncDecl("array.copy", new IRPtrType(), new IRPtrType(), new IRIntType(32)));
         funcDecls.add(new IRFuncDecl("array.size", new IRIntType(32), new IRPtrType()));
         funcDecls.add(new IRFuncDecl("string.length", new IRIntType(32), new IRPtrType(new IRIntType(8))));
         funcDecls.add(
