@@ -1,10 +1,9 @@
 ;Definition Of Structs
 
 ;Definition Of Global Variables
-@a.1 = global i32 0
-@b.1 = global i32 0
 
 ;Definition Of String Literals
+@stringLiteral.0.1 = private unnamed_addr constant [14 x i8] c"Hello, world!\00"
 
 ;Definition Of Formatted String Fragments
 
@@ -41,15 +40,12 @@ declare i1 @builtin.string_ne(ptr, ptr)
 define i32 @main () {
 main:
 	call void @global.init()
+	call void @println(ptr @stringLiteral.0.1)
 	ret i32 0
 }
 
 define void @global.init () {
 global.init:
-	%0 = add i32 2, 1
-	store i32 %0, ptr @a.1
-	%1 = load i32, ptr @a.1
-	store i32 %1, ptr @b.1
 	ret void
 }
 
