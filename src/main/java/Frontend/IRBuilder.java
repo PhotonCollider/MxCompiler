@@ -121,6 +121,9 @@ public class IRBuilder implements ASTVisitor {
 
         IRFuncDef irFuncDef = new IRFuncDef(fullName, IRType.fromType(it.retType));
         currentBlock = new IRBasicBlock(irFuncDef.name, irFuncDef);
+        if (curScope.getClassName() != null) {
+            irFuncDef.args.add(getNamelessVariable(new IRPtrType(new IRStructType(curScope.getClassName()))));
+        }
 
         if (irFuncDef.name.equals("main")) {
             currentBlock.body.add(new IRCallInst(null, "global.init"));
@@ -490,19 +493,15 @@ public class IRBuilder implements ASTVisitor {
             funcName.instanceName.accept(this);
             // className has prefix "struct."
             IRValue instance = getValueResult(funcName.instanceName.isLeft);
-            if (instance.type instanceof IRPtrType) { // string or array
-                IRType derefType = ((IRPtrType) instance.type).dereference();
-                if (derefType instanceof IRIntType) {
-                    if (((IRIntType) derefType).bitlen == 8) { // string
-                        callInst = new IRCallInst(null, "string." + funcName.member, instance);
-                    } else { // array
-                        callInst = new IRCallInst(null, "array." + funcName.member, instance);
-                    }
-                } else {
-                    throw new RuntimeException("not string or array!!!");
+            IRType derefType = ((IRPtrType) instance.type).dereference();
+            if (derefType instanceof IRIntType) {
+                if (((IRIntType) derefType).bitlen == 8) { // string
+                    callInst = new IRCallInst(null, "string." + funcName.member, instance);
+                } else { // array
+                    callInst = new IRCallInst(null, "array." + funcName.member, instance);
                 }
             } else { // class
-                String className = instance.type.toString();
+                String className = ((IRStructType) ((IRPtrType) instance.type).dereference()).name;
                 callInst = new IRCallInst(null, className + "." + funcName.member, instance);
             }
         } else {
@@ -512,7 +511,7 @@ public class IRBuilder implements ASTVisitor {
             String functionName = ((IdentifierNode) it.fnName).name;
             if (curScope.getClassName() != null &&
                     root.structDefMap.get(curScope.getClassName()).memberFuncSet.contains(functionName)) {
-                callInst = new IRCallInst(null, "struct." + curScope.getClassName() + "." + functionName);
+                callInst = new IRCallInst(null, curScope.getClassName() + "." + functionName);
                 callInst.args.add(currentBlock.func.args.get(0));
             } else {
                 callInst = new IRCallInst(null, functionName);

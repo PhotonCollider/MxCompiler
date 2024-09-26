@@ -19,10 +19,6 @@ public class IRStructType extends IRType {
         return "%struct." + name;
     }
 
-//    public void setFields(ArrayList<IRType> fields) {
-//        this.fields = fields;
-//    }
-
     public String getStructInfo() {
         StringBuilder sb = new StringBuilder("{");
         for (int i = 0; i < fields.size(); i++) {
