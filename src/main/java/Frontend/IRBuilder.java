@@ -30,7 +30,7 @@ public class IRBuilder implements ASTVisitor {
     public final GlobalScope globalScope;
     private SuiteScope curScope;
     public IRRootNode root;
-    private boolean visitedClassDef, endBlock;
+    private boolean visitedClassDef;
     private IRBasicBlock currentBlock, initBlock;
     private IRValue curExprValue;
     private IRBasicBlock loopEnd, loopCond;
@@ -44,7 +44,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(RootNode it) {
-        endBlock = false;
+        currentBlock = null;
         IRFuncDef initFnDef = new IRFuncDef("global.init", new IRVoidType());
         initBlock = new IRBasicBlock(initFnDef.name, initFnDef);
         visitedClassDef = false;
@@ -123,11 +123,11 @@ public class IRBuilder implements ASTVisitor {
         }
 
         for (var arg : it.paramList) {
-            IRLocalVar IRarg = getNamelessVariable(arg.second.toIR());
+            IRLocalVar IRArg = getNamelessVariable(arg.second.toIR());
             IRLocalVar ptr = (IRLocalVar) curScope.IRAddVar(arg.first, new IRPtrType(arg.second.toIR()));
             currentBlock.body.add(new IRAllocaInst(ptr));
-            currentBlock.body.add(new IRStoreInst(IRarg, ptr));
-            irFuncDef.args.add(IRarg);
+            currentBlock.body.add(new IRStoreInst(IRArg, ptr));
+            irFuncDef.args.add(IRArg);
         }
         for (var stmt : it.body) {
             stmt.accept(this);
@@ -192,7 +192,7 @@ public class IRBuilder implements ASTVisitor {
         curScope = new SuiteScope(curScope);
         for (var stmt : it.stmtNodes) {
             stmt.accept(this);
-            if (endBlock) {
+            if (currentBlock == null) {
                 break;
             }
         }
@@ -217,11 +217,17 @@ public class IRBuilder implements ASTVisitor {
 
         currentBlock = thenBlock;
         it.thenStmt.accept(this);
-        submitBlock();
+        if (currentBlock != null) {
+            currentBlock.body.add(new IRJumpInst(nxtBlock));
+            submitBlock();
+        }
 
         currentBlock = elseBlock;
         it.elseStmt.accept(this);
-        submitBlock();
+        if (currentBlock != null) {
+            currentBlock.body.add(new IRJumpInst(nxtBlock));
+            submitBlock();
+        }
 
         currentBlock = nxtBlock;
     }
@@ -229,7 +235,6 @@ public class IRBuilder implements ASTVisitor {
     private void submitBlock() {
         currentBlock.func.body.add(currentBlock);
         currentBlock = null; // useless but appropriate
-        endBlock = true;
     }
 
     @Override
@@ -256,8 +261,8 @@ public class IRBuilder implements ASTVisitor {
         it.body.accept(this);
         if (currentBlock != null) { // in case of endBlock
             currentBlock.body.add(new IRJumpInst(condBlock));
+            submitBlock();
         }
-        submitBlock();
 
         currentBlock = nxtBlock;
         loopCond = prevLoopCond;
@@ -276,8 +281,10 @@ public class IRBuilder implements ASTVisitor {
         loopEnd = nxtBlock;
 
         it.init.accept(this);
-        currentBlock.body.add(new IRJumpInst(condBlock));
-        submitBlock();
+        if (currentBlock != null) {
+            currentBlock.body.add(new IRJumpInst(condBlock));
+            submitBlock();
+        }
 
         currentBlock = condBlock;
         it.cond.accept(this);
@@ -288,13 +295,15 @@ public class IRBuilder implements ASTVisitor {
         currentBlock = bodyBlock;
         for (var stmt : it.body) {
             stmt.accept(this);
-            if (endBlock) {
+            if (currentBlock == null) {
                 break;
             }
         }
-        it.update.accept(this);
-        currentBlock.body.add(new IRJumpInst(condBlock));
-        submitBlock();
+        if (currentBlock != null) {
+            it.update.accept(this);
+            currentBlock.body.add(new IRJumpInst(condBlock));
+            submitBlock();
+        }
 
         currentBlock = nxtBlock;
         loopCond = prevLoopCond;
