@@ -16,7 +16,7 @@ public class IRBrInst extends IRInst{
 
     @Override
     public String toString() {
-        return String.format("br i1 %s, label %s, label %s", cond, trueBlock.label, falseBlock.label);
+        return String.format("br i1 %s, label %%%s, label %%%s", cond, trueBlock.label, falseBlock.label);
     }
 
     @Override

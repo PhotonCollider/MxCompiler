@@ -131,12 +131,11 @@ public class IRBuilder implements ASTVisitor {
         }
         for (var stmt : it.body) {
             stmt.accept(this);
+            if (currentBlock == null) {
+                break;
+            }
         }
         root.funcDefMap.put(fullName, irFuncDef);
-
-        if (currentBlock != null) {
-            submitBlock();
-        }
         curScope = curScope.parentScope;
     }
 
@@ -233,7 +232,9 @@ public class IRBuilder implements ASTVisitor {
     }
 
     private void submitBlock() {
-        currentBlock.func.body.add(currentBlock);
+        if (!currentBlock.body.isEmpty()) {
+            currentBlock.func.body.add(currentBlock);
+        }
         currentBlock = null; // useless but appropriate
     }
 
@@ -755,7 +756,7 @@ public class IRBuilder implements ASTVisitor {
         for (int i = 0; i < exprList.size(); i++) {
             IRLocalVar tmp = getNamelessVariable(new IRPtrType(new IRIntType(8)));
             currentBlock.body.add(new IRCallInst(tmp, "builtin.string.add", res, exprList.get(i)));
-            res = (IRValue) getNamelessVariable(new IRPtrType(new IRIntType(8)));
+            res = getNamelessVariable(new IRPtrType(new IRIntType(8)));
             currentBlock.body.add(new IRCallInst((IRLocalVar) res, "builtin.string.add", tmp, strList.get(i + 1)));
         }
         FStringCnt++;

@@ -42,12 +42,11 @@ gcd:
 	store i32 %0, ptr %x.1
 	%y.1 = alloca i32
 	store i32 %1, ptr %y.1
-
 	%2 = load i32, ptr %x.1
 	%3 = load i32, ptr %y.1
 	%4 = srem i32 %2, %3
 	%5 = icmp eq i32 %4, 0
-	br i1 %5, label if.then.0, label if.else.0
+	br i1 %5, label %if.then.0, label %if.else.0
 if.then.0:
 	%6 = load i32, ptr %y.1
 	ret i32 %6
@@ -58,7 +57,6 @@ if.else.0:
 	%10 = srem i32 %8, %9
 	%11 = call i32 @gcd(i32 %7, i32 %10)
 	ret i32 %11
-if.endif.0:
 }
 
 define i32 @main () {
