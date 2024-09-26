@@ -218,7 +218,7 @@ fi
 
 if [ $HAS_PROBLEM -eq 0 ]; then
     print_green_msg "Passed"
-    clean
+    #clean
     exit 0
 else
     print_red_msg "Failed"
