@@ -56,7 +56,7 @@ if.then.0:
 if.else.0:
 	br label %if.endif.0
 if.endif.0:
-	%i.1 = alloca i32
+	%i.2 = alloca i32
 	br label %for.update.0
 for.update.0:
 	%3 = load i32, ptr %i.1

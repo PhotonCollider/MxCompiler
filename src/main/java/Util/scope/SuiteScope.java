@@ -13,14 +13,12 @@ import Util.type.Type;
 public class SuiteScope {
     public SuiteScope parentScope;
     public HashMap<String, Type> varDeclare;
-
-    public HashMap<String, Integer> varCnt;
+    private static final HashMap<String, Integer> IRVarCnt = new HashMap<>();
     public HashMap<String, IRValue> IRVarMap;
 
     public SuiteScope(SuiteScope parentScope) {
         this.parentScope = parentScope;
         varDeclare = new HashMap<>();
-        varCnt = new HashMap<>();
         IRVarMap = new HashMap<>();
     }
 
@@ -33,11 +31,11 @@ public class SuiteScope {
 
     public IRValue IRAddVar(String varName, IRType type) {
         int id = 1;
-        if (varCnt.containsKey(varName)) {
-            id = varCnt.get(varName);
+        if (IRVarCnt.containsKey(varName)) {
+            id = IRVarCnt.get(varName);
             id++;
         }
-        varCnt.put(varName, id);
+        IRVarCnt.put(varName, id);
 
         IRLocalVar localVar = new IRLocalVar(String.format("%s.%d", varName, id), type);
         IRVarMap.put(varName, localVar);

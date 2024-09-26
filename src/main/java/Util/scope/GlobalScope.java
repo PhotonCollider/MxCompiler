@@ -103,14 +103,7 @@ public class GlobalScope extends ClassScope {
 
     @Override
     public IRValue IRAddVar(String varName, IRType type) {
-        int id = 1;
-        if (varCnt.containsKey(varName)) {
-            id = varCnt.get(varName);
-            id++;
-        }
-        varCnt.put(varName, id);
-
-        IRGlobalVar globalVar = new IRGlobalVar(type, String.format("%s.%d", varName, id));
+        IRGlobalVar globalVar = new IRGlobalVar(type, varName);
         IRVarMap.put(varName, globalVar);
         return globalVar;
     }
