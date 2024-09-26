@@ -26,7 +26,6 @@ import Util.type.Type;
 
 import java.util.ArrayList;
 
-// TODO: check builtin function names in IRBuilder
 public class IRBuilder implements ASTVisitor {
     public final GlobalScope globalScope;
     private SuiteScope curScope;
@@ -124,7 +123,11 @@ public class IRBuilder implements ASTVisitor {
         }
 
         for (var arg : it.paramList) {
-            irFuncDef.args.add(new IRLocalVar(arg.first, IRType.fromType(arg.second)));
+            IRLocalVar IRarg = getNamelessVariable(arg.second.toIR());
+            IRLocalVar ptr = (IRLocalVar) curScope.IRAddVar(arg.first, new IRPtrType(arg.second.toIR()));
+            currentBlock.body.add(new IRAllocaInst(ptr));
+            currentBlock.body.add(new IRStoreInst(IRarg, ptr));
+            irFuncDef.args.add(IRarg);
         }
         for (var stmt : it.body) {
             stmt.accept(this);
