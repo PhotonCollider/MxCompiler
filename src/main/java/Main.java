@@ -37,9 +37,13 @@ public class Main {
             IRRootNode IRRoot = new IRRootNode();
             new IRBuilder(gScope, IRRoot).visit(ast);
 
-            output.write(IRRoot.toString());
-            output.flush();
-            output.close();
+            if (args.length > 0) {
+                System.out.println(IRRoot.toString());
+            } else {
+                output.write(IRRoot.toString());
+                output.flush();
+                output.close();
+            }
         } catch (Error er) {
             System.err.println(er);
             System.exit(1);
