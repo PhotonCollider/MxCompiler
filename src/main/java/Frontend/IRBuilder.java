@@ -20,6 +20,7 @@ import IR.Value.Var.IRGlobalVar;
 import IR.Value.Var.IRLocalVar;
 import Util.scope.FnScope;
 import Util.scope.GlobalScope;
+import Util.scope.LoopScope;
 import Util.scope.SuiteScope;
 import Util.type.FnType;
 import Util.type.Type;
@@ -47,6 +48,7 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(RootNode it) {
         currentBlock = null;
+        curScope = globalScope;
         IRFuncDef initFnDef = new IRFuncDef("global.init", new IRVoidType());
         initBlock = new IRBasicBlock(initFnDef.name, initFnDef);
         visitedClassDef = false;
@@ -248,6 +250,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(WhileStmtNode it) {
+        curScope = new LoopScope(curScope);
         IRBasicBlock condBlock = new IRBasicBlock("while.cond." + it.id, currentBlock.func);
         IRBasicBlock bodyBlock = new IRBasicBlock("while.body." + it.id, currentBlock.func);
         IRBasicBlock nxtBlock = new IRBasicBlock("while.end." + it.id, currentBlock.func);
@@ -276,10 +279,12 @@ public class IRBuilder implements ASTVisitor {
         currentBlock = nxtBlock;
         continueDest = prevContinueDest;
         breakDest = prevBreakDest;
+        curScope = curScope.parentScope;
     }
 
     @Override
     public void visit(ForStmtNode it) {
+        curScope = new LoopScope(curScope);
         IRBasicBlock condBlock = new IRBasicBlock("for.cond." + it.id, currentBlock.func);
         IRBasicBlock bodyBlock = new IRBasicBlock("for.body." + it.id, currentBlock.func);
         IRBasicBlock updateBlock = new IRBasicBlock("for.update." + it.id, currentBlock.func);
@@ -303,6 +308,7 @@ public class IRBuilder implements ASTVisitor {
         submitBlock();
 
         currentBlock = bodyBlock;
+        curScope = new SuiteScope(curScope);
         for (var stmt : it.body) {
             stmt.accept(this);
             if (currentBlock == null) {
@@ -313,6 +319,7 @@ public class IRBuilder implements ASTVisitor {
             currentBlock.body.add(new IRJumpInst(updateBlock));
             submitBlock();
         }
+        curScope = curScope.parentScope;
 
         currentBlock = updateBlock;
         it.update.accept(this);
@@ -322,6 +329,7 @@ public class IRBuilder implements ASTVisitor {
         currentBlock = nxtBlock;
         continueDest = prevContinueDest;
         breakDest = prevBreakDest;
+        curScope = curScope.parentScope;
     }
 
     @Override
