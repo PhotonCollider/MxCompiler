@@ -135,6 +135,14 @@ public class IRBuilder implements ASTVisitor {
                 break;
             }
         }
+        if (currentBlock != null) {
+            if (curScope.parentScope == globalScope && it.name.equals("main")) {
+                currentBlock.body.add(new IRRetInst(new IRIntConst(0)));
+            } else {
+                currentBlock.body.add(new IRRetInst(null)); // void functions may have no return stmt
+            }
+            submitBlock();
+        }
         root.funcDefMap.put(fullName, irFuncDef);
         curScope = curScope.parentScope;
     }
@@ -232,9 +240,7 @@ public class IRBuilder implements ASTVisitor {
     }
 
     private void submitBlock() {
-        if (!currentBlock.body.isEmpty()) {
-            currentBlock.func.body.add(currentBlock);
-        }
+        currentBlock.func.body.add(currentBlock);
         currentBlock = null; // useless but appropriate
     }
 
@@ -429,7 +435,7 @@ public class IRBuilder implements ASTVisitor {
 
     private IRLocalVar initArrayLiteral(ArrayLiteralNode it) {
         IRLocalVar ret = getNamelessVariable(it.type.toIR());
-        currentBlock.body.add(new IRCallInst(ret, "builtin.malloc_array", new IRIntConst(((IRPtrType)it.type.toIR()).dereference().size()), new IRIntConst(it.literals.size())));
+        currentBlock.body.add(new IRCallInst(ret, "builtin.malloc_array", new IRIntConst(((IRPtrType) it.type.toIR()).dereference().size()), new IRIntConst(it.literals.size())));
         for (int i = 0; i < it.literals.size(); i++) {
             IRLocalVar ptrToSmallerLiteral = getNamelessVariable(it.type.toIR());
             currentBlock.body.add(new IRGetelementptrInst(ptrToSmallerLiteral, ret, new IRIntConst(i), -1));

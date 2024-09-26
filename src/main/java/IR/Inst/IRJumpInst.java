@@ -12,7 +12,7 @@ public class IRJumpInst extends IRInst {
 
     @Override
     public String toString() {
-        return String.format("br label %s", dest.label);
+        return String.format("br label %%%s", dest.label);
     }
 
     @Override

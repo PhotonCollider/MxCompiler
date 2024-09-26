@@ -1,8 +1,11 @@
 ;Definition Of Structs
 
 ;Definition Of Global Variables
+@n.1 = global i32 0
 
 ;Definition Of String Literals
+@stringLiteral.0.1 = private unnamed_addr constant [4 x i8] c"YES\00"
+@stringLiteral.1.1 = private unnamed_addr constant [3 x i8] c"NO\00"
 
 ;Definition Of Formatted String Fragments
 
@@ -36,35 +39,66 @@ declare i1 @builtin.string_leq(ptr, ptr)
 declare i1 @builtin.string_ne(ptr, ptr)
 
 ;Definition Of Functions
-define i32 @gcd (i32 %0, i32 %1) {
-gcd:
-	%x.1 = alloca i32
-	store i32 %0, ptr %x.1
-	%y.1 = alloca i32
-	store i32 %1, ptr %y.1
-	%2 = load i32, ptr %x.1
-	%3 = load i32, ptr %y.1
-	%4 = srem i32 %2, %3
-	%5 = icmp eq i32 %4, 0
-	br i1 %5, label %if.then.0, label %if.else.0
-if.then.0:
-	%6 = load i32, ptr %y.1
-	ret i32 %6
-if.else.0:
-	%7 = load i32, ptr %y.1
-	%8 = load i32, ptr %x.1
-	%9 = load i32, ptr %y.1
-	%10 = srem i32 %8, %9
-	%11 = call i32 @gcd(i32 %7, i32 %10)
-	ret i32 %11
-}
-
 define i32 @main () {
 main:
 	call void @global.init()
-	%12 = call i32 @gcd(i32 10, i32 1)
-	%13 = call ptr @toString(i32 %12)
-	call void @println(ptr %13)
+	%0 = call i32 @getInt()
+	store i32 %0, ptr @n.1
+	%1 = load i32, ptr @n.1
+	%2 = srem i32 %1, 4
+	%3 = icmp eq i32 %2, 0
+	%4 = alloca i1
+	store i1 true, ptr %4
+	br i1 %3, label %LogicBinary.end.0, label %LogicBinary.second.0
+LogicBinary.second.0:
+	%5 = load i32, ptr @n.1
+	%6 = srem i32 %5, 7
+	%7 = icmp eq i32 %6, 0
+	store i1 %7, ptr %4
+	br label %LogicBinary.end.0
+LogicBinary.end.0:
+	%8 = load i1, ptr %4
+	%9 = alloca i1
+	store i1 true, ptr %9
+	br i1 %8, label %LogicBinary.end.0, label %LogicBinary.second.0
+LogicBinary.second.0:
+	%10 = load i32, ptr @n.1
+	%11 = srem i32 %10, 47
+	%12 = icmp eq i32 %11, 0
+	store i1 %12, ptr %9
+	br label %LogicBinary.end.0
+LogicBinary.end.0:
+	%13 = load i1, ptr %9
+	%14 = alloca i1
+	store i1 true, ptr %14
+	br i1 %13, label %LogicBinary.end.0, label %LogicBinary.second.0
+LogicBinary.second.0:
+	%15 = load i32, ptr @n.1
+	%16 = srem i32 %15, 74
+	%17 = icmp eq i32 %16, 0
+	store i1 %17, ptr %14
+	br label %LogicBinary.end.0
+LogicBinary.end.0:
+	%18 = load i1, ptr %14
+	%19 = alloca i1
+	store i1 true, ptr %19
+	br i1 %18, label %LogicBinary.end.0, label %LogicBinary.second.0
+LogicBinary.second.0:
+	%20 = load i32, ptr @n.1
+	%21 = srem i32 %20, 477
+	%22 = icmp eq i32 %21, 0
+	store i1 %22, ptr %19
+	br label %LogicBinary.end.0
+LogicBinary.end.0:
+	%23 = load i1, ptr %19
+	br i1 %23, label %if.then.0, label %if.else.0
+if.then.0:
+	call void @print(ptr @stringLiteral.0.1)
+	br label %if.endif.0
+if.else.0:
+	call void @print(ptr @stringLiteral.1.1)
+	br label %if.endif.0
+if.endif.0:
 	ret i32 0
 }
 
