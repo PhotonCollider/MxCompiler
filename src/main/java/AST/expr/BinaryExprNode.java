@@ -18,6 +18,7 @@ public class BinaryExprNode extends ExprNode {
 
     @Override
     public void accept(ASTVisitor visitor) {
+//        System.out.println("Visiting the binary expr " + op + " , at " + pos);
         visitor.visit(this);
     }
 

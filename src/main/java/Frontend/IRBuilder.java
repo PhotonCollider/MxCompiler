@@ -511,7 +511,7 @@ public class IRBuilder implements ASTVisitor {
         IRValue array = getValueResult(it.array.isLeft);
         it.index.accept(this);
         IRValue index = getValueResult(it.index.isLeft);
-        IRLocalVar res = getNamelessVariable(it.type.toIR()); // a left value is a ptr in IR, no dereference
+        IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
         currentBlock.body.add(new IRGetelementptrInst(res, array, index, -1));
         curExprValue = res;
     }

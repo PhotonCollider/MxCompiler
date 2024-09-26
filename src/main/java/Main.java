@@ -36,6 +36,7 @@ public class Main {
             new SemanticChecker(gScope).visit(ast);
 
             IRRootNode IRRoot = new IRRootNode();
+//            System.out.println("start ir building");
             new IRBuilder(gScope, IRRoot).visit(ast);
 
             if (usingStdio) {
