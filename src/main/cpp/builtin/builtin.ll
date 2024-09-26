@@ -221,7 +221,7 @@ define dso_local noalias nonnull i8* @builtin.malloc_array(i32 %0, i32 %1) local
 }
 
 ; Function Attrs: nofree nounwind
-define dso_local i8* @builtin.string.add(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #2 {
+define dso_local i8* @builtin.string_add(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #2 {
   %3 = tail call i32 @strlen(i8* nonnull dereferenceable(1) %0) #11
   %4 = tail call i32 @strlen(i8* nonnull dereferenceable(1) %1) #11
   %5 = add i32 %3, 1

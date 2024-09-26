@@ -19,7 +19,7 @@ public abstract class IRType {
     @Override
     public abstract String toString();
 
-    public int size() { // in bytes, we simply let everything be 4 bytes
+    public int sizeInBytes() { // we simply let everything be 4 bytes
         if (this instanceof IRVoidType) {
             return 0;
         } else if (this instanceof IRStructType) {

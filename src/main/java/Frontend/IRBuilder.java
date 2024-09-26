@@ -372,7 +372,7 @@ public class IRBuilder implements ASTVisitor {
 
     private IRLocalVar allocateEmptyArray(ArrayList<IRValue> fixedSizeList, int depth, IRPtrType type) {
         IRLocalVar ret = getNamelessVariable(type);
-        currentBlock.body.add(new IRCallInst(ret, "builtin.calloc", new IRIntConst(type.dereference().size()),
+        currentBlock.body.add(new IRCallInst(ret, "builtin.calloc", new IRIntConst(type.dereference().sizeInBytes()),
                 fixedSizeList.get(depth)));
         if (depth == type.dim - 1) {
             return ret;
@@ -435,7 +435,7 @@ public class IRBuilder implements ASTVisitor {
 
     private IRLocalVar initArrayLiteral(ArrayLiteralNode it) {
         IRLocalVar ret = getNamelessVariable(it.type.toIR());
-        currentBlock.body.add(new IRCallInst(ret, "builtin.malloc_array", new IRIntConst(((IRPtrType) it.type.toIR()).dereference().size()), new IRIntConst(it.literals.size())));
+        currentBlock.body.add(new IRCallInst(ret, "builtin.malloc_array", new IRIntConst(((IRPtrType) it.type.toIR()).dereference().sizeInBytes()), new IRIntConst(it.literals.size())));
         for (int i = 0; i < it.literals.size(); i++) {
             IRLocalVar ptrToSmallerLiteral = getNamelessVariable(it.type.toIR());
             currentBlock.body.add(new IRGetelementptrInst(ptrToSmallerLiteral, ret, new IRIntConst(i), -1));
@@ -461,7 +461,7 @@ public class IRBuilder implements ASTVisitor {
     public void visit(NewVariableExprNode it) {
         IRStructDef structDef = root.structDefMap.get(it.type.name);
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
-        currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.size())));
+        currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.sizeInBytes())));
         if (structDef.hasConstructor) {
             currentBlock.body.add(new IRCallInst(null, "struct." + it.type + "." + it.type));
         }
@@ -475,8 +475,21 @@ public class IRBuilder implements ASTVisitor {
             funcName.instanceName.accept(this);
             // className has prefix "struct."
             IRValue instance = getValueResult(funcName.instanceName.isLeft);
-            String className = instance.type.toString();
-            callInst = new IRCallInst(null, className + "." + funcName.member, instance);
+            if (instance.type instanceof IRPtrType) { // string or array
+                IRType derefType = ((IRPtrType) instance.type).dereference();
+                if (derefType instanceof IRIntType) {
+                    if (((IRIntType) derefType).bitlen == 8) { // string
+                        callInst = new IRCallInst(null, "string." + funcName.member, instance);
+                    } else { // array
+                        callInst = new IRCallInst(null, "array." + funcName.member, instance);
+                    }
+                } else {
+                    throw new RuntimeException("not string or array!!!");
+                }
+            } else { // class
+                String className = instance.type.toString();
+                callInst = new IRCallInst(null, className + "." + funcName.member, instance);
+            }
         } else {
             if (!(it.fnName instanceof IdentifierNode)) {
                 throw new RuntimeException("unexpected case!");
@@ -580,7 +593,7 @@ public class IRBuilder implements ASTVisitor {
                     currentBlock.body.add(new IRBinaryInst(res, lhsValue, rhsValue, "add"));
                 } else { // string addition
                     res = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-                    currentBlock.body.add(new IRCallInst(res, "builtin.string.add", lhsValue, rhsValue));
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_add", lhsValue, rhsValue));
                 }
                 break;
             case "-":

@@ -1,7 +1,7 @@
 package IR.Type;
 
 public class IRIntType extends IRType {
-    int bitlen;
+    public int bitlen;
 
     public IRIntType(int bitlen) {
         this.bitlen = bitlen;
