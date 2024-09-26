@@ -1,9 +1,10 @@
 ;Definition Of Structs
 
 ;Definition Of Global Variables
-@a.1 = global ptr null
 
 ;Definition Of String Literals
+@stringLiteral.0.1 = private unnamed_addr constant [2 x i8] c" \00"
+@stringLiteral.1.1 = private unnamed_addr constant [1 x i8] c"\00"
 
 ;Definition Of Formatted String Fragments
 
@@ -40,63 +41,140 @@ declare i1 @builtin.string_ne(ptr, ptr)
 define i32 @main () {
 main:
 	call void @global.init()
-	%1 = load ptr, ptr @a.1
-	%2 = getelementptr i32, ptr %1, i32 0
-	store i32 0, ptr %2
-	%3 = load ptr, ptr @a.1
-	%4 = getelementptr i32, ptr %3, i32 1
-	store i32 1, ptr %4
-	%5 = load ptr, ptr @a.1
-	%6 = getelementptr i32, ptr %5, i32 2
-	store i32 2, ptr %6
-	%7 = load ptr, ptr @a.1
-	%8 = getelementptr i32, ptr %7, i32 3
-	store i32 3, ptr %8
-	%9 = load ptr, ptr @a.1
-	%10 = getelementptr i32, ptr %9, i32 1
-	%11 = load i32, ptr %10
-	%12 = call ptr @toString(i32 %11)
-	%13 = load ptr, ptr @a.1
-	%14 = getelementptr i32, ptr %13, i32 1
-	%15 = load i32, ptr %14
-	%16 = call ptr @toString(i32 %15)
-	call void @println(ptr %16)
-	%17 = load ptr, ptr @a.1
-	%18 = getelementptr i32, ptr %17, i32 2
-	%19 = load i32, ptr %18
-	%20 = call ptr @toString(i32 %19)
-	call void @println(ptr %20)
-	%21 = load ptr, ptr @a.1
-	%22 = getelementptr i32, ptr %21, i32 3
-	%23 = load i32, ptr %22
-	%24 = call ptr @toString(i32 %23)
-	call void @println(ptr %24)
+	%n.1 = alloca i32
+	%44 = call i32 @getInt()
+	store i32 %44, ptr %n.1
+	%a.1 = alloca ptr
+	%45 = load i32, ptr %n.1
+	%46 = call ptr @builtin.calloc_array(i32 4, i32 %45)
+	store ptr %46, ptr %a.1
 	%i.1 = alloca i32
 	store i32 0, ptr %i.1
-	br label %for.cond0
-for.cond0:
-	%25 = load i32, ptr %i.1
-	%26 = icmp slt i32 %25, 4
-	br i1 %26, label %for.body.0, label %for.end.0
-for.body.0:
-	%27 = load ptr, ptr @a.1
-	%28 = load i32, ptr %i.1
-	%29 = getelementptr i32, ptr %27, i32 %28
-	%30 = load i32, ptr %29
-	%31 = call ptr @toString(i32 %30)
-	call void @println(ptr %31)
-	%32 = load i32, ptr %i.1
-	%33 = add i32 %32, 1
-	store i32 %33, ptr %i.1
-	br label %for.cond0
-for.end.0:
+	br label %for.cond2
+for.cond2:
+	%47 = load i32, ptr %i.1
+	%48 = load i32, ptr %n.1
+	%49 = icmp slt i32 %47, %48
+	br i1 %49, label %for.body.2, label %for.end.2
+for.body.2:
+	%50 = call i32 @getInt()
+	%51 = load ptr, ptr %a.1
+	%52 = load i32, ptr %i.1
+	%53 = getelementptr i32, ptr %51, i32 %52
+	store i32 %50, ptr %53
+	%54 = load i32, ptr %i.1
+	%55 = add i32 %54, 1
+	store i32 %55, ptr %i.1
+	br label %for.cond2
+for.end.2:
+	%56 = load ptr, ptr %a.1
+	call void @bubble_sort(ptr %56)
+	store i32 0, ptr %i.1
+	br label %for.cond3
+for.cond3:
+	%57 = load i32, ptr %i.1
+	%58 = load i32, ptr %n.1
+	%59 = icmp slt i32 %57, %58
+	br i1 %59, label %for.body.3, label %for.end.3
+for.body.3:
+	%60 = load ptr, ptr %a.1
+	%61 = load i32, ptr %i.1
+	%62 = getelementptr i32, ptr %60, i32 %61
+	%63 = load i32, ptr %62
+	%64 = call ptr @toString(i32 %63)
+	%65 = call ptr @builtin.string_add(ptr %64, ptr @stringLiteral.0.1)
+	call void @print(ptr %65)
+	%66 = load i32, ptr %i.1
+	%67 = add i32 %66, 1
+	store i32 %67, ptr %i.1
+	br label %for.cond3
+for.end.3:
+	call void @println(ptr @stringLiteral.1.1)
 	ret i32 0
 }
 
 define void @global.init () {
 global.init:
-	%0 = call ptr @builtin.calloc_array(i32 4, i32 4)
-	store ptr %0, ptr @a.1
+	ret void
+}
+
+define void @bubble_sort (ptr %0) {
+bubble_sort:
+	%a.1 = alloca ptr
+	store ptr %0, ptr %a.1
+	%i.1 = alloca i32
+	%j.1 = alloca i32
+	%n.1 = alloca i32
+	%1 = load ptr, ptr %a.1
+	%2 = call i32 @array.size(ptr %1)
+	store i32 %2, ptr %n.1
+	store i32 0, ptr %i.1
+	br label %for.cond0
+for.cond0:
+	%3 = load i32, ptr %i.1
+	%4 = load i32, ptr %n.1
+	%5 = sub i32 %4, 1
+	%6 = icmp slt i32 %3, %5
+	br i1 %6, label %for.body.0, label %for.end.0
+for.body.0:
+	store i32 0, ptr %j.1
+	br label %for.cond1
+for.cond1:
+	%7 = load i32, ptr %j.1
+	%8 = load i32, ptr %n.1
+	%9 = load i32, ptr %i.1
+	%10 = sub i32 %8, %9
+	%11 = sub i32 %10, 1
+	%12 = icmp slt i32 %7, %11
+	br i1 %12, label %for.body.1, label %for.end.1
+for.body.1:
+	%13 = load ptr, ptr %a.1
+	%14 = load i32, ptr %j.1
+	%15 = getelementptr i32, ptr %13, i32 %14
+	%16 = load i32, ptr %15
+	%17 = load ptr, ptr %a.1
+	%18 = load i32, ptr %j.1
+	%19 = add i32 %18, 1
+	%20 = getelementptr i32, ptr %17, i32 %19
+	%21 = load i32, ptr %20
+	%22 = icmp slt i32 %16, %21
+	br i1 %22, label %if.then.0, label %if.else.0
+if.then.0:
+	br label %for.end.1
+if.else.0:
+	br label %if.endif.0
+if.endif.0:
+	%t.1 = alloca i32
+	%23 = load ptr, ptr %a.1
+	%24 = load i32, ptr %j.1
+	%25 = getelementptr i32, ptr %23, i32 %24
+	%26 = load i32, ptr %25
+	store i32 %26, ptr %t.1
+	%27 = load ptr, ptr %a.1
+	%28 = load i32, ptr %j.1
+	%29 = add i32 %28, 1
+	%30 = getelementptr i32, ptr %27, i32 %29
+	%31 = load i32, ptr %30
+	%32 = load ptr, ptr %a.1
+	%33 = load i32, ptr %j.1
+	%34 = getelementptr i32, ptr %32, i32 %33
+	store i32 %31, ptr %34
+	%35 = load i32, ptr %t.1
+	%36 = load ptr, ptr %a.1
+	%37 = load i32, ptr %j.1
+	%38 = add i32 %37, 1
+	%39 = getelementptr i32, ptr %36, i32 %38
+	store i32 %35, ptr %39
+	%40 = load i32, ptr %j.1
+	%41 = add i32 %40, 1
+	store i32 %41, ptr %j.1
+	br label %for.cond1
+for.end.1:
+	%42 = load i32, ptr %i.1
+	%43 = add i32 %42, 1
+	store i32 %43, ptr %i.1
+	br label %for.cond0
+for.end.0:
 	ret void
 }
 

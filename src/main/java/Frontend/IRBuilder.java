@@ -337,7 +337,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(ContinueStmtNode it) {
-        currentBlock.body.add(new IRJumpInst(loopEnd));
+        currentBlock.body.add(new IRJumpInst(loopCond));
         submitBlock();
     }
 
