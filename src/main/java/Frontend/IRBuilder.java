@@ -33,7 +33,9 @@ public class IRBuilder implements ASTVisitor {
     private boolean visitedClassDef;
     private IRBasicBlock currentBlock, initBlock;
     private IRValue curExprValue;
-    private IRBasicBlock loopEnd, loopCond;
+    private IRBasicBlock continueDest, breakDest;
+    // continueDest could be update expr (in for stmts) or cond expr (in while stmts)
+    // BreadDest can only be loopEnd
     private int allocateArrayForId = 0, arrayLiteralCnt = 0, stringLiteralCnt = 0, FStringCnt = 0, logicBinaryCnt = 0,
             condExprID = 0, namelessVarCnt = 0;
 
@@ -246,14 +248,14 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(WhileStmtNode it) {
-        IRBasicBlock condBlock = new IRBasicBlock("while.cond" + it.id, currentBlock.func);
+        IRBasicBlock condBlock = new IRBasicBlock("while.cond." + it.id, currentBlock.func);
         IRBasicBlock bodyBlock = new IRBasicBlock("while.body." + it.id, currentBlock.func);
         IRBasicBlock nxtBlock = new IRBasicBlock("while.end." + it.id, currentBlock.func);
 
-        IRBasicBlock prevLoopCond = loopCond;
-        IRBasicBlock prevLoopEnd = loopEnd;
-        loopCond = condBlock;
-        loopEnd = nxtBlock;
+        IRBasicBlock prevContinueDest = continueDest;
+        IRBasicBlock prevBreakDest = breakDest;
+        continueDest = condBlock;
+        breakDest = nxtBlock;
 
         currentBlock.body.add(new IRJumpInst(condBlock));
         submitBlock();
@@ -272,20 +274,21 @@ public class IRBuilder implements ASTVisitor {
         }
 
         currentBlock = nxtBlock;
-        loopCond = prevLoopCond;
-        loopEnd = prevLoopEnd;
+        continueDest = prevContinueDest;
+        breakDest = prevBreakDest;
     }
 
     @Override
     public void visit(ForStmtNode it) {
-        IRBasicBlock condBlock = new IRBasicBlock("for.cond" + it.id, currentBlock.func);
+        IRBasicBlock condBlock = new IRBasicBlock("for.cond." + it.id, currentBlock.func);
         IRBasicBlock bodyBlock = new IRBasicBlock("for.body." + it.id, currentBlock.func);
+        IRBasicBlock updateBlock = new IRBasicBlock("for.update." + it.id, currentBlock.func);
         IRBasicBlock nxtBlock = new IRBasicBlock("for.end." + it.id, currentBlock.func);
 
-        IRBasicBlock prevLoopCond = loopCond;
-        IRBasicBlock prevLoopEnd = loopEnd;
-        loopCond = condBlock;
-        loopEnd = nxtBlock;
+        IRBasicBlock prevContinueDest = continueDest;
+        IRBasicBlock prevBreakDest = breakDest;
+        continueDest = updateBlock;
+        breakDest = nxtBlock;
 
         it.init.accept(this);
         if (currentBlock != null) {
@@ -307,14 +310,18 @@ public class IRBuilder implements ASTVisitor {
             }
         }
         if (currentBlock != null) {
-            it.update.accept(this);
-            currentBlock.body.add(new IRJumpInst(condBlock));
+            currentBlock.body.add(new IRJumpInst(updateBlock));
             submitBlock();
         }
 
+        currentBlock = updateBlock;
+        it.update.accept(this);
+        currentBlock.body.add(new IRJumpInst(condBlock));
+        submitBlock();
+
         currentBlock = nxtBlock;
-        loopCond = prevLoopCond;
-        loopEnd = prevLoopEnd;
+        continueDest = prevContinueDest;
+        breakDest = prevBreakDest;
     }
 
     @Override
@@ -331,13 +338,13 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(BreakStmtNode it) {
-        currentBlock.body.add(new IRJumpInst(loopEnd));
+        currentBlock.body.add(new IRJumpInst(breakDest));
         submitBlock();
     }
 
     @Override
     public void visit(ContinueStmtNode it) {
-        currentBlock.body.add(new IRJumpInst(loopCond));
+        currentBlock.body.add(new IRJumpInst(continueDest));
         submitBlock();
     }
 

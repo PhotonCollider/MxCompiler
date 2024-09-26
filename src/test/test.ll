@@ -50,8 +50,8 @@ main:
 	store ptr %46, ptr %a.1
 	%i.1 = alloca i32
 	store i32 0, ptr %i.1
-	br label %for.cond2
-for.cond2:
+	br label %for.cond.2
+for.cond.2:
 	%47 = load i32, ptr %i.1
 	%48 = load i32, ptr %n.1
 	%49 = icmp slt i32 %47, %48
@@ -62,16 +62,18 @@ for.body.2:
 	%52 = load i32, ptr %i.1
 	%53 = getelementptr i32, ptr %51, i32 %52
 	store i32 %50, ptr %53
+	br label %for.update.2
+for.update.2:
 	%54 = load i32, ptr %i.1
 	%55 = add i32 %54, 1
 	store i32 %55, ptr %i.1
-	br label %for.cond2
+	br label %for.cond.2
 for.end.2:
 	%56 = load ptr, ptr %a.1
 	call void @bubble_sort(ptr %56)
 	store i32 0, ptr %i.1
-	br label %for.cond3
-for.cond3:
+	br label %for.cond.3
+for.cond.3:
 	%57 = load i32, ptr %i.1
 	%58 = load i32, ptr %n.1
 	%59 = icmp slt i32 %57, %58
@@ -84,10 +86,12 @@ for.body.3:
 	%64 = call ptr @toString(i32 %63)
 	%65 = call ptr @builtin.string_add(ptr %64, ptr @stringLiteral.0.1)
 	call void @print(ptr %65)
+	br label %for.update.3
+for.update.3:
 	%66 = load i32, ptr %i.1
 	%67 = add i32 %66, 1
 	store i32 %67, ptr %i.1
-	br label %for.cond3
+	br label %for.cond.3
 for.end.3:
 	call void @println(ptr @stringLiteral.1.1)
 	ret i32 0
@@ -109,8 +113,8 @@ bubble_sort:
 	%2 = call i32 @array.size(ptr %1)
 	store i32 %2, ptr %n.1
 	store i32 0, ptr %i.1
-	br label %for.cond0
-for.cond0:
+	br label %for.cond.0
+for.cond.0:
 	%3 = load i32, ptr %i.1
 	%4 = load i32, ptr %n.1
 	%5 = sub i32 %4, 1
@@ -118,8 +122,8 @@ for.cond0:
 	br i1 %6, label %for.body.0, label %for.end.0
 for.body.0:
 	store i32 0, ptr %j.1
-	br label %for.cond1
-for.cond1:
+	br label %for.cond.1
+for.cond.1:
 	%7 = load i32, ptr %j.1
 	%8 = load i32, ptr %n.1
 	%9 = load i32, ptr %i.1
@@ -140,7 +144,7 @@ for.body.1:
 	%22 = icmp slt i32 %16, %21
 	br i1 %22, label %if.then.0, label %if.else.0
 if.then.0:
-	br label %for.end.1
+	br label %for.update.1
 if.else.0:
 	br label %if.endif.0
 if.endif.0:
@@ -165,15 +169,19 @@ if.endif.0:
 	%38 = add i32 %37, 1
 	%39 = getelementptr i32, ptr %36, i32 %38
 	store i32 %35, ptr %39
+	br label %for.update.1
+for.update.1:
 	%40 = load i32, ptr %j.1
 	%41 = add i32 %40, 1
 	store i32 %41, ptr %j.1
-	br label %for.cond1
+	br label %for.cond.1
 for.end.1:
+	br label %for.update.0
+for.update.0:
 	%42 = load i32, ptr %i.1
 	%43 = add i32 %42, 1
 	store i32 %43, ptr %i.1
-	br label %for.cond0
+	br label %for.cond.0
 for.end.0:
 	ret void
 }
