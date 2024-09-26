@@ -49,36 +49,36 @@ main:
 	%3 = icmp eq i32 %2, 0
 	%4 = alloca i1
 	store i1 true, ptr %4
-	br i1 %3, label %LogicBinary.end.0, label %LogicBinary.second.0
-LogicBinary.second.0:
+	br i1 %3, label %LogicBinary.end.3, label %LogicBinary.second.3
+LogicBinary.second.3:
 	%5 = load i32, ptr @n.1
 	%6 = srem i32 %5, 7
 	%7 = icmp eq i32 %6, 0
 	store i1 %7, ptr %4
-	br label %LogicBinary.end.0
-LogicBinary.end.0:
+	br label %LogicBinary.end.3
+LogicBinary.end.3:
 	%8 = load i1, ptr %4
 	%9 = alloca i1
 	store i1 true, ptr %9
-	br i1 %8, label %LogicBinary.end.0, label %LogicBinary.second.0
-LogicBinary.second.0:
+	br i1 %8, label %LogicBinary.end.2, label %LogicBinary.second.2
+LogicBinary.second.2:
 	%10 = load i32, ptr @n.1
 	%11 = srem i32 %10, 47
 	%12 = icmp eq i32 %11, 0
 	store i1 %12, ptr %9
-	br label %LogicBinary.end.0
-LogicBinary.end.0:
+	br label %LogicBinary.end.2
+LogicBinary.end.2:
 	%13 = load i1, ptr %9
 	%14 = alloca i1
 	store i1 true, ptr %14
-	br i1 %13, label %LogicBinary.end.0, label %LogicBinary.second.0
-LogicBinary.second.0:
+	br i1 %13, label %LogicBinary.end.1, label %LogicBinary.second.1
+LogicBinary.second.1:
 	%15 = load i32, ptr @n.1
 	%16 = srem i32 %15, 74
 	%17 = icmp eq i32 %16, 0
 	store i1 %17, ptr %14
-	br label %LogicBinary.end.0
-LogicBinary.end.0:
+	br label %LogicBinary.end.1
+LogicBinary.end.1:
 	%18 = load i1, ptr %14
 	%19 = alloca i1
 	store i1 true, ptr %19

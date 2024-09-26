@@ -654,6 +654,7 @@ public class IRBuilder implements ASTVisitor {
     private void visitLogicBinaryExprNode(BinaryExprNode it) {
         IRBasicBlock secondBlock = new IRBasicBlock("LogicBinary.second." + logicBinaryCnt, currentBlock.func);
         IRBasicBlock endBlock = new IRBasicBlock("LogicBinary.end." + logicBinaryCnt, currentBlock.func);
+        logicBinaryCnt++;
         it.lhs.accept(this);
         IRValue lhsValue = getValueResult(it.lhs.isLeft);
         IRLocalVar resultPtr = getNamelessVariable(new IRPtrType(new IRIntType(1)));
