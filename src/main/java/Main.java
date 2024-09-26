@@ -16,8 +16,9 @@ import Util.*;
 public class Main {
     public static void main(String[] args) throws Exception {
         String inputPath = "./src/test/test.mx";
-        InputStream input = args.length > 0 ? System.in : new FileInputStream(inputPath);
-        FileWriter output = new FileWriter("./src/test/test.ll");
+        boolean usingStdio = args.length > 0;
+        InputStream input = usingStdio ? System.in : new FileInputStream(inputPath);
+        FileWriter fileOutput = usingStdio ? null : new FileWriter("./src/test/test.ll");
         try {
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -37,12 +38,12 @@ public class Main {
             IRRootNode IRRoot = new IRRootNode();
             new IRBuilder(gScope, IRRoot).visit(ast);
 
-            if (args.length > 0) {
-                System.out.println(IRRoot.toString());
+            if (usingStdio) {
+                System.out.println(IRRoot);
             } else {
-                output.write(IRRoot.toString());
-                output.flush();
-                output.close();
+                fileOutput.write(IRRoot.toString());
+                fileOutput.flush();
+                fileOutput.close();
             }
         } catch (Error er) {
             System.err.println(er);
