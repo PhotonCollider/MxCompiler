@@ -1,6 +1,5 @@
 package IR.Value.Var;
 
-import IR.IRVisitor;
 import IR.Type.IRType;
 import IR.Value.IRValue;
 

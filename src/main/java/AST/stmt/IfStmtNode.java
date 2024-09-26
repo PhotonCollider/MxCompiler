@@ -1,7 +1,6 @@
 package AST.stmt;
 
 import Util.Pos;
-import Util.error.SyntaxError;
 import AST.ASTVisitor;
 import AST.expr.ExprNode;
 

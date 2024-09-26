@@ -1,6 +1,5 @@
 package Util.type;
 
-import AST.def.ClassDefNode;
 import Util.Pos;
 import Util.error.SemanticError;
 import Util.scope.ClassScope;

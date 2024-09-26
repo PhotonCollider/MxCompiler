@@ -1,14 +1,12 @@
 import java.io.*;
 
 import AST.RootNode;
-import AST.expr.atom.IdentifierNode;
 import Frontend.ASTBuilder;
 import Frontend.IRBuilder;
 import Frontend.SemanticChecker;
 import Frontend.SymbolCollector;
 import IR.Module.IRRootNode;
 import Util.scope.GlobalScope;
-import Util.type.FnType;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;

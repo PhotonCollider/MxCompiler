@@ -3,7 +3,6 @@ package Util.scope;
 import IR.Type.IRType;
 import IR.Value.IRValue;
 import IR.Value.Var.IRGlobalVar;
-import IR.Value.Var.IRLocalVar;
 import Util.Pos;
 import Util.error.SemanticError;
 import Util.error.SyntaxError;

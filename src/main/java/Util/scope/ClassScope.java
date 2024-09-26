@@ -1,6 +1,5 @@
 package Util.scope;
 
-import AST.def.ClassDefNode;
 import Util.Pos;
 import Util.error.SyntaxError;
 import Util.type.FnType;

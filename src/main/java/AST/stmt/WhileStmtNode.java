@@ -3,9 +3,6 @@ package AST.stmt;
 import AST.ASTVisitor;
 import AST.expr.ExprNode;
 import Util.Pos;
-import Util.error.SyntaxError;
-
-import java.util.ArrayList;
 
 public class WhileStmtNode extends StmtNode {
     public ExprNode cond;

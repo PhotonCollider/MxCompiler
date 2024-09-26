@@ -2,8 +2,6 @@ package IR;
 
 import IR.Inst.*;
 import IR.Module.*;
-import IR.Value.Var.IRGlobalVar;
-import IR.Value.Var.IRLocalVar;
 
 public interface IRVisitor {
     void visit(IRBinaryInst IRBinaryInst);

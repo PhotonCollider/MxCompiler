@@ -1,6 +1,5 @@
 package AST.stmt;
 
-import AST.ASTNode;
 import AST.ASTVisitor;
 import AST.def.VarDefNode;
 import Util.Pos;

@@ -6,9 +6,7 @@ import IR.Type.IRType;
 import IR.Value.Var.IRLocalVar;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class IRFuncDef extends IRNode {
     public String name;
