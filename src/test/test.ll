@@ -1,10 +1,7 @@
 ;Definition Of Structs
 
 ;Definition Of Global Variables
-@t.1 = global i32 0
-@l.1 = global i32 0
-@i.1 = global i32 0
-@s.1 = global ptr null
+@a.1 = global ptr null
 
 ;Definition Of String Literals
 
@@ -43,47 +40,54 @@ declare i1 @builtin.string_ne(ptr, ptr)
 define i32 @main () {
 main:
 	call void @global.init()
-	%0 = call i32 @getInt()
-	store i32 %0, ptr @t.1
-	store i32 0, ptr @i.1
+	%1 = load ptr, ptr @a.1
+	%2 = getelementptr i32, ptr %1, i32 0
+	store i32 0, ptr %2
+	%3 = load ptr, ptr @a.1
+	%4 = getelementptr i32, ptr %3, i32 1
+	store i32 1, ptr %4
+	%5 = load ptr, ptr @a.1
+	%6 = getelementptr i32, ptr %5, i32 2
+	store i32 2, ptr %6
+	%7 = load ptr, ptr @a.1
+	%8 = getelementptr i32, ptr %7, i32 3
+	store i32 3, ptr %8
+	%9 = load ptr, ptr @a.1
+	%10 = getelementptr i32, ptr %9, i32 1
+	%11 = load i32, ptr %10
+	%12 = call ptr @toString(i32 %11)
+	%13 = load ptr, ptr @a.1
+	%14 = getelementptr i32, ptr %13, i32 1
+	%15 = load i32, ptr %14
+	%16 = call ptr @toString(i32 %15)
+	call void @println(ptr %16)
+	%17 = load ptr, ptr @a.1
+	%18 = getelementptr i32, ptr %17, i32 2
+	%19 = load i32, ptr %18
+	%20 = call ptr @toString(i32 %19)
+	call void @println(ptr %20)
+	%21 = load ptr, ptr @a.1
+	%22 = getelementptr i32, ptr %21, i32 3
+	%23 = load i32, ptr %22
+	%24 = call ptr @toString(i32 %23)
+	call void @println(ptr %24)
+	%i.1 = alloca i32
+	store i32 0, ptr %i.1
 	br label %for.cond0
 for.cond0:
-	%1 = load i32, ptr @i.1
-	%2 = load i32, ptr @t.1
-	%3 = icmp slt i32 %1, %2
-	br i1 %3, label %for.body.0, label %for.end.0
+	%25 = load i32, ptr %i.1
+	%26 = icmp slt i32 %25, 4
+	br i1 %26, label %for.body.0, label %for.end.0
 for.body.0:
-	%4 = call ptr @getString()
-	store ptr %4, ptr @s.1
-	%5 = load ptr, ptr @s.1
-	%6 = call i32 @string.length(ptr %5)
-	store i32 %6, ptr @l.1
-	%7 = load i32, ptr @l.1
-	%8 = icmp sgt i32 %7, 10
-	br i1 %8, label %if.then.0, label %if.else.0
-if.then.0:
-	%9 = load ptr, ptr @s.1
-	%10 = call ptr @string.substring(ptr %9, i32 0, i32 1)
-	%11 = load i32, ptr @l.1
-	%12 = sub i32 %11, 2
-	%13 = call ptr @toString(i32 %12)
-	%14 = call ptr @builtin.string_add(ptr %10, ptr %13)
-	%15 = load ptr, ptr @s.1
-	%16 = load i32, ptr @l.1
-	%17 = sub i32 %16, 1
-	%18 = load i32, ptr @l.1
-	%19 = call ptr @string.substring(ptr %15, i32 %17, i32 %18)
-	%20 = call ptr @builtin.string_add(ptr %14, ptr %19)
-	call void @println(ptr %20)
-	br label %if.endif.0
-if.else.0:
-	%21 = load ptr, ptr @s.1
-	call void @println(ptr %21)
-	br label %if.endif.0
-if.endif.0:
-	%22 = load i32, ptr @i.1
-	%23 = add i32 %22, 1
-	store i32 %23, ptr @i.1
+	%27 = load ptr, ptr @a.1
+	%28 = load i32, ptr %i.1
+	%29 = getelementptr i32, ptr %27, i32 %28
+	%30 = load i32, ptr %29
+	%31 = call ptr @toString(i32 %30)
+	call void @println(ptr %31)
+	%32 = load i32, ptr %i.1
+	%33 = add i32 %32, 1
+	store i32 %33, ptr %i.1
 	br label %for.cond0
 for.end.0:
 	ret i32 0
@@ -91,6 +95,8 @@ for.end.0:
 
 define void @global.init () {
 global.init:
+	%0 = call ptr @builtin.calloc_array(i32 4, i32 4)
+	store ptr %0, ptr @a.1
 	ret void
 }
 

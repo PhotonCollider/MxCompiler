@@ -1,37 +1,42 @@
 /*
 Test Package: Codegen
-Author: Pikachu
-Time: 2020-02-03
+Author: Haojun Mao
+Time: 2020-01-25
 Input:
 === input ===
+1
+2
 3
-njfngnrurunrgunrunvurn
-jfvnjfdnvjdbfvsbdubruvbubvkdb
-ksdnvidnviudbvibd
+4
 === end ===
 Output:
 === output ===
-n20n
-j27b
-k15d
+0000
 === end ===
 ExitCode: 0
 InstLimit: -1
-Origin Package: Codeforces 71A #53307259
+Origin Package: Codegen Pretest-531
 */
-int t,l,i;
-string s;
-int main(){
-	t = getInt();
-    for(i=0;i<t;++i){
-        s = getString();
-		l = s.length();
-		if(l > 10)
-            println(s.substring(0, 1) + toString(l-2) + s.substring(l-1, l));
-			// printf("%c%d%c\n",s[0],l-2,s[l-1]);
-		else
-			// printf("%s\n",s);
-            println(s);
-	}
+//input: 1 2 3 4
 
+int[] a = new int[4];
+int main()
+{
+		a[0] = 0;
+
+	a[1] = 1;
+	a[2] = 2;
+	a[3] = 3;
+
+	//toString(a[0]);
+	toString(a[1]);
+	println(toString(a[1]));
+	println(toString(a[2]));
+	println(toString(a[3]));
+
+	for (int i = 0; i < 4; i++)
+	{
+		println(toString(a[i]));
+	}
+    return 0;
 }
