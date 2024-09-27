@@ -146,7 +146,7 @@ public class IRBuilder implements ASTVisitor {
             if (curScope.parentScope == globalScope && it.name.equals("main")) {
                 currentBlock.body.add(new IRRetInst(new IRIntConst(0)));
             } else {
-                if (irFuncDef.retType.equals(new IRVoidType())) {
+                if (irFuncDef.retType instanceof IRVoidType) {
                     currentBlock.body.add(new IRRetInst(null)); // void functions may have no return stmt
                 }
             }
