@@ -238,7 +238,7 @@ define dso_local i8* @builtin.string_add(i8* nocapture readonly %0, i8* nocaptur
 declare dso_local i8* @strcpy(i8* noalias returned, i8* noalias nocapture readonly) local_unnamed_addr #4
 
 ; Function Attrs: nounwind readonly
-define dso_local zeroext i1 @builtin.string.eq(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
+define dso_local zeroext i1 @builtin.string_eq(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
   %3 = tail call i32 @strcmp(i8* nonnull dereferenceable(1) %0, i8* nonnull dereferenceable(1) %1) #11
   %4 = icmp eq i32 %3, 0
   ret i1 %4
@@ -248,35 +248,35 @@ define dso_local zeroext i1 @builtin.string.eq(i8* nocapture readonly %0, i8* no
 declare dso_local i32 @strcmp(i8* nocapture, i8* nocapture) local_unnamed_addr #9
 
 ; Function Attrs: nounwind readonly
-define dso_local zeroext i1 @builtin.string.ge(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
+define dso_local zeroext i1 @builtin.string_ge(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
   %3 = tail call i32 @strcmp(i8* nonnull dereferenceable(1) %0, i8* nonnull dereferenceable(1) %1) #11
   %4 = icmp sgt i32 %3, 0
   ret i1 %4
 }
 
 ; Function Attrs: nounwind readonly
-define dso_local zeroext i1 @builtin.string.geq(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
+define dso_local zeroext i1 @builtin.string_geq(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
   %3 = tail call i32 @strcmp(i8* nonnull dereferenceable(1) %0, i8* nonnull dereferenceable(1) %1) #11
   %4 = icmp sgt i32 %3, -1
   ret i1 %4
 }
 
 ; Function Attrs: nounwind readonly
-define dso_local zeroext i1 @builtin.string.le(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
+define dso_local zeroext i1 @builtin.string_le(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
   %3 = tail call i32 @strcmp(i8* nonnull dereferenceable(1) %0, i8* nonnull dereferenceable(1) %1) #11
   %4 = icmp slt i32 %3, 0
   ret i1 %4
 }
 
 ; Function Attrs: nounwind readonly
-define dso_local zeroext i1 @builtin.string.leq(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
+define dso_local zeroext i1 @builtin.string_leq(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
   %3 = tail call i32 @strcmp(i8* nonnull dereferenceable(1) %0, i8* nonnull dereferenceable(1) %1) #11
   %4 = icmp slt i32 %3, 1
   ret i1 %4
 }
 
 ; Function Attrs: nounwind readonly
-define dso_local zeroext i1 @builtin.string.ne(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
+define dso_local zeroext i1 @builtin.string_ne(i8* nocapture readonly %0, i8* nocapture readonly %1) local_unnamed_addr #6 {
   %3 = tail call i32 @strcmp(i8* nonnull dereferenceable(1) %0, i8* nonnull dereferenceable(1) %1) #11
   %4 = icmp ne i32 %3, 0
   ret i1 %4

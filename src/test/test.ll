@@ -52,16 +52,14 @@ main:
 	%c.1 = alloca i32
 	%2 = call i32 @getInt()
 	store i32 %2, ptr %c.1
-
 	%t.1 = alloca i1
-
 	%3 = alloca ptr
 	%4 = load i32, ptr %a.1
 	%5 = add i32 %4, 1
 	store i32 %5, ptr %a.1
 	%6 = load i32, ptr %a.1
 	%7 = load i32, ptr %b.1
-	%8 = icmp eq i32 %6, %7
+	%8 = call i1 @builtin.string_eq(i32 %6, i32 %7)
 	br i1 %8, label %cond.then.0, label %cond.else.0
 cond.then.0:
 	store ptr @stringLiteral.0, ptr %3
@@ -77,7 +75,7 @@ cond.end.0:
 	%13 = add i32 %12, -1
 	store i32 %13, ptr %c.1
 	%14 = load i32, ptr %c.1
-	%15 = icmp eq i32 %11, %14
+	%15 = call i1 @builtin.string_eq(i32 %11, i32 %14)
 	br i1 %15, label %cond.then.1, label %cond.else.1
 cond.then.1:
 	store ptr @stringLiteral.2, ptr %10
@@ -87,7 +85,7 @@ cond.else.1:
 	br label %cond.end.1
 cond.end.1:
 	%16 = load ptr, ptr %10
-	%17 = icmp eq ptr %9, %16
+	%17 = call i1 @builtin.string_eq(ptr %9, ptr %16)
 	store i1 %17, ptr %t.1
 	%18 = load i1, ptr %t.1
 	br i1 %18, label %if.then.0, label %if.else.0

@@ -656,27 +656,51 @@ public class IRBuilder implements ASTVisitor {
             // cmp operators
             case "<":
                 res = getNamelessVariable(new IRIntType(1));
-                currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "slt"));
+                if (it.type.name.equals("int")) {
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "slt"));
+                } else {
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_le", lhsValue, rhsValue));
+                }
                 break;
             case "<=":
                 res = getNamelessVariable(new IRIntType(1));
-                currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sle"));
+                if (it.type.name.equals("int")) {
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sle"));
+                } else {
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_leq", lhsValue, rhsValue));
+                }
                 break;
             case ">":
                 res = getNamelessVariable(new IRIntType(1));
-                currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sgt"));
+                if (it.type.name.equals("int")) {
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sgt"));
+                } else {
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_ge", lhsValue, rhsValue));
+                }
                 break;
             case ">=":
                 res = getNamelessVariable(new IRIntType(1));
-                currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sge"));
+                if (it.type.name.equals("int")) {
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sge"));
+                } else {
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_geq", lhsValue, rhsValue));
+                }
                 break;
             case "==":
                 res = getNamelessVariable(new IRIntType(1));
-                currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "eq"));
+                if (it.type.name.equals("int")) {
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "eq"));
+                } else {
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_eq", lhsValue, rhsValue));
+                }
                 break;
             case "!=":
                 res = getNamelessVariable(new IRIntType(1));
-                currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "ne"));
+                if (it.type.name.equals("int")) {
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "ne"));
+                } else {
+                    currentBlock.body.add(new IRCallInst(res, "builtin.string_ne", lhsValue, rhsValue));
+                }
                 break;
             // bit operators
             case "<<":
