@@ -834,7 +834,7 @@ public class IRBuilder implements ASTVisitor {
 
         IRValue res = strList.get(0); // global var by now
         for (int i = 0; i < it.exprs.size(); i++) {
-            ExprNode expr = it.exprs.get(0);
+            ExprNode expr = it.exprs.get(i);
             expr.accept(this);
             IRValue value = getValueResult(expr.isLeft);
             if (expr.type.name.equals("bool")) {
