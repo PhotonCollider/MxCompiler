@@ -372,6 +372,8 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(NewArrayExprNode it) {
         IRType type = IRType.fromType(it.type);
+        System.out.println("type is : " + it.type);
+        System.out.println("IRtype is : " + ((IRPtrType) type).dim + ((IRPtrType) type).base);
         if (it.init == null) {
             ArrayList<IRValue> IRFixedSizeList = new ArrayList<>();
             for (var item : it.fixedSizeList) {
@@ -392,8 +394,11 @@ public class IRBuilder implements ASTVisitor {
         IRLocalVar ret = getNamelessVariable(type);
         currentBlock.body.add(new IRCallInst(ret, "builtin.calloc_array", new IRIntConst(type.dereference().sizeInBytes()),
                 fixedSizeList.get(depth)));
-        if ((depth == type.dim - 1 && !(type.base instanceof IRStructType))
-                || (depth == type.dim - 2 && type.base instanceof IRStructType)) {
+//        if ((depth == type.dim - 1 && !(type.base instanceof IRStructType))
+//                || (depth == type.dim - 2 && type.base instanceof IRStructType)) {
+//            return ret;
+//        }
+        if (type.dim == 1) {
             return ret;
         }
 
