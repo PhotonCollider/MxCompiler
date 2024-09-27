@@ -392,7 +392,8 @@ public class IRBuilder implements ASTVisitor {
         IRLocalVar ret = getNamelessVariable(type);
         currentBlock.body.add(new IRCallInst(ret, "builtin.calloc_array", new IRIntConst(type.dereference().sizeInBytes()),
                 fixedSizeList.get(depth)));
-        if (depth == type.dim - 1) {
+        if ((depth == type.dim - 1 && !(type.base instanceof IRStructType))
+                || (depth == type.dim - 2 && type.base instanceof IRStructType)) {
             return ret;
         }
 
