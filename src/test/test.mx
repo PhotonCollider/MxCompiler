@@ -8,16 +8,39 @@ Input:
 === end ===
 Output:
 === output ===
-2
+ccc
+3
+3
+4
 === end ===
 ExitCode: 0
 InstLimit: -1
 */
 
+void foo1() {
+    println("aaa");
+}
+
+void foo2() {
+    println("bbb");
+}
+
+void foo3() {
+    println("ccc");
+}
+
+void foo4() {
+    println("ddd");
+}
+
+void foo5() {
+    println("eee");
+}
+
 int main() {
     int a = getInt(), b = getInt(), c = getInt();
-    bool t = (++a == b ? "uyy" : "yuy") == (b == --c ? "uyy" : "yuv");
-    if (t) {
-        printlnInt(a);
-    }
+    (a++ == b) ? (a++ == b) ? foo1() : foo2() : (a++ == b) ? (++b == c++) ? foo3() : foo4() : foo5();
+    printlnInt(a);
+    printlnInt(b);
+    printlnInt(c);
 }

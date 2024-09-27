@@ -543,8 +543,7 @@ public class IRBuilder implements ASTVisitor {
                 callInst = new IRCallInst(null, functionName);
             }
         }
-        for (
-                var arg1 : it.arg) {
+        for (var arg1 : it.arg) {
             arg1.accept(this);
             IRValue IRArg = getValueResult(arg1.isLeft);
             callInst.args.add(IRArg);
@@ -772,8 +771,12 @@ public class IRBuilder implements ASTVisitor {
         IRBasicBlock endBlock = new IRBasicBlock("cond.end." + condExprID, currentBlock.func);
         condExprID++;
 
-        IRLocalVar resPtr = getNamelessVariable(new IRPtrType(it.type.toIR()));
-        currentBlock.body.add(new IRAllocaInst(resPtr));
+        boolean noValue = it.type.name.equals("void");
+        IRLocalVar resPtr = null;
+        if (!noValue) {
+            resPtr = getNamelessVariable(new IRPtrType(it.type.toIR()));
+            currentBlock.body.add(new IRAllocaInst(resPtr));
+        }
         it.cond.accept(this);
         IRValue condVal = getValueResult(it.cond.isLeft);
         currentBlock.body.add(new IRBrInst(thenBlock, elseBlock, condVal));
@@ -782,21 +785,29 @@ public class IRBuilder implements ASTVisitor {
         currentBlock = thenBlock;
         it.left.accept(this);
         IRValue leftVal = getValueResult(it.left.isLeft);
-        currentBlock.body.add(new IRStoreInst(leftVal, resPtr));
+        if (!noValue) {
+            currentBlock.body.add(new IRStoreInst(leftVal, resPtr));
+        }
         currentBlock.body.add(new IRJumpInst(endBlock));
         submitBlock();
 
         currentBlock = elseBlock;
         it.right.accept(this);
         IRValue rightVal = getValueResult(it.right.isLeft);
-        currentBlock.body.add(new IRStoreInst(rightVal, resPtr));
+        if (!noValue) {
+            currentBlock.body.add(new IRStoreInst(rightVal, resPtr));
+        }
         currentBlock.body.add(new IRJumpInst(endBlock));
         submitBlock();
 
         currentBlock = endBlock;
-        IRLocalVar res = getNamelessVariable(it.type.toIR());
-        currentBlock.body.add(new IRLoadInst(res, resPtr));
-        curExprValue = res;
+        if (!noValue) {
+            IRLocalVar res = getNamelessVariable(it.type.toIR());
+            currentBlock.body.add(new IRLoadInst(res, resPtr));
+            curExprValue = res;
+        } else {
+            curExprValue = null;
+        }
     }
 
     @Override
