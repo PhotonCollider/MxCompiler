@@ -687,18 +687,18 @@ public class IRBuilder implements ASTVisitor {
                 break;
             case "==":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.lhs.type.name.equals("int")) {
-                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "eq"));
-                } else {
+                if (it.lhs.type.name.equals("string")) {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_eq", lhsValue, rhsValue));
+                } else { // bool or int or array or class
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "eq"));
                 }
                 break;
             case "!=":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.lhs.type.name.equals("int")) {
-                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "ne"));
-                } else {
+                if (it.lhs.type.name.equals("string")) {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_ne", lhsValue, rhsValue));
+                } else { // bool or int or array or class
+                    currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "ne"));
                 }
                 break;
             // bit operators
