@@ -816,9 +816,9 @@ public class IRBuilder implements ASTVisitor {
         }
         for (int i = 0; i < exprList.size(); i++) {
             IRLocalVar tmp = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-            currentBlock.body.add(new IRCallInst(tmp, "builtin.string.add", res, exprList.get(i)));
+            currentBlock.body.add(new IRCallInst(tmp, "builtin.string_add", res, exprList.get(i)));
             res = getNamelessVariable(new IRPtrType(new IRIntType(8)));
-            currentBlock.body.add(new IRCallInst((IRLocalVar) res, "builtin.string.add", tmp, strList.get(i + 1)));
+            currentBlock.body.add(new IRCallInst((IRLocalVar) res, "builtin.string_add", tmp, strList.get(i + 1)));
         }
         FStringCnt++;
         curExprValue = res;
