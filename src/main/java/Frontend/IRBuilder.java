@@ -482,7 +482,7 @@ public class IRBuilder implements ASTVisitor {
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
         currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.sizeInBytes())));
         if (structDef.hasConstructor) {
-            currentBlock.body.add(new IRCallInst(null, "struct." + it.type + "." + it.type));
+            currentBlock.body.add(new IRCallInst(null, it.type + "." + it.type));
         }
         curExprValue = res;
     }
@@ -492,18 +492,16 @@ public class IRBuilder implements ASTVisitor {
         IRCallInst callInst;
         if (it.fnName instanceof MemberAccessExprNode funcName) {
             funcName.instanceName.accept(this);
-            // className has prefix "struct."
             IRValue instance = getValueResult(funcName.instanceName.isLeft);
             IRType derefType = ((IRPtrType) instance.type).dereference();
-            if (derefType instanceof IRIntType) {
-                if (((IRIntType) derefType).bitlen == 8) { // string
-                    callInst = new IRCallInst(null, "string." + funcName.member, instance);
-                } else { // array
-                    callInst = new IRCallInst(null, "array." + funcName.member, instance);
-                }
-            } else { // class
+            if (derefType instanceof IRIntType && ((IRIntType) derefType).bitlen == 8) { //string
+                callInst = new IRCallInst(null, "string." + funcName.member, instance);
+            } else if (derefType instanceof IRStructType) { // class
                 String className = ((IRStructType) ((IRPtrType) instance.type).dereference()).name;
                 callInst = new IRCallInst(null, className + "." + funcName.member, instance);
+            } else { // array
+                // derefType is i32 or ptr
+                callInst = new IRCallInst(null, "array." + funcName.member, instance);
             }
         } else {
             if (!(it.fnName instanceof IdentifierNode)) {
@@ -518,7 +516,8 @@ public class IRBuilder implements ASTVisitor {
                 callInst = new IRCallInst(null, functionName);
             }
         }
-        for (var arg1 : it.arg) {
+        for (
+                var arg1 : it.arg) {
             arg1.accept(this);
             IRValue IRArg = getValueResult(arg1.isLeft);
             callInst.args.add(IRArg);
@@ -836,7 +835,7 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(ConstructorDefNode it) {
         curScope = new FnScope(curScope, new FnType(new Type("void")));
-        String fullName = "struct." + curScope.getClassName() + '.' + curScope.getClassName();
+        String fullName = curScope.getClassName() + '.' + curScope.getClassName();
 
         IRFuncDef irFuncDef = new IRFuncDef(fullName, new IRVoidType());
         currentBlock = new IRBasicBlock(fullName + ".entry", irFuncDef);
@@ -846,6 +845,13 @@ public class IRBuilder implements ASTVisitor {
         irFuncDef.args.add(localVar);
         for (var stmt : it.stmts) {
             stmt.accept(this);
+            if (currentBlock == null) {
+                break;
+            }
+        }
+        if (currentBlock != null) {
+            currentBlock.body.add(new IRRetInst(null));
+            submitBlock();
         }
         root.funcDefMap.put(fullName, irFuncDef);
         curScope = curScope.parentScope;
