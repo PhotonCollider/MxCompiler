@@ -396,7 +396,7 @@ public class IRBuilder implements ASTVisitor {
 //                || (depth == type.dim - 2 && type.base instanceof IRStructType)) {
 //            return ret;
 //        }
-        if (type.dim == 1) {
+        if (type.dim == 1 || depth == fixedSizeList.size() - 1) {
             return ret;
         }
 
@@ -422,8 +422,19 @@ public class IRBuilder implements ASTVisitor {
         currentBlock = bodyBlock;
         IRLocalVar nxtPtr = getNamelessVariable(type);
         currentBlock.body.add(new IRGetelementptrInst(nxtPtr, ret, readForCnt, -1));
-        IRLocalVar smallerEmptyArray = allocateEmptyArray(fixedSizeList, depth + 1, (IRPtrType) type.dereference());
-        currentBlock.body.add(new IRStoreInst(smallerEmptyArray, nxtPtr));
+        if (type.dim == 2 && type.base instanceof IRStructType) {
+            String className = ((IRStructType) type.base).name;
+            IRStructDef structDef = root.structDefMap.get(className);
+            IRLocalVar res = getNamelessVariable(type.dereference());
+            currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.sizeInBytes())));
+            if (structDef.hasConstructor) {
+                currentBlock.body.add(new IRCallInst(null, className + "." + className));
+            }
+            currentBlock.body.add(new IRStoreInst(res, nxtPtr));
+        } else {
+            IRLocalVar smallerEmptyArray = allocateEmptyArray(fixedSizeList, depth + 1, (IRPtrType) type.dereference());
+            currentBlock.body.add(new IRStoreInst(smallerEmptyArray, nxtPtr));
+        }
         // update expr begin
         IRLocalVar updateForCnt = getNamelessVariable(new IRIntType(32));
         currentBlock.body.add(new IRLoadInst(updateForCnt, forCnt));
