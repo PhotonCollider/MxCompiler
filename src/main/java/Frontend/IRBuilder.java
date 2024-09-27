@@ -507,7 +507,7 @@ public class IRBuilder implements ASTVisitor {
     public void visit(NewVariableExprNode it) {
         IRStructDef structDef = root.structDefMap.get(it.type.name);
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
-        currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.sizeInBytes())));
+        currentBlock.body.add(new IRCallInst(res, "builtin.calloc", new IRIntConst(structDef.struct.sizeInBytes())));
         if (structDef.hasConstructor) {
             currentBlock.body.add(new IRCallInst(null, it.type + "." + it.type));
         }
