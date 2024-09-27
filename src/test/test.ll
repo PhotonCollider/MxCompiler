@@ -57,14 +57,14 @@ main:
 	%4 = add i32 %3, 1
 	store i32 %4, ptr %a.1
 	%5 = load i32, ptr %b.1
-	%6 = call i1 @builtin.string_eq(i32 %3, i32 %5)
+	%6 = icmp eq i32 %3, %5
 	br i1 %6, label %cond.then.0, label %cond.else.0
 cond.then.0:
 	%7 = load i32, ptr %a.1
 	%8 = add i32 %7, 1
 	store i32 %8, ptr %a.1
 	%9 = load i32, ptr %b.1
-	%10 = call i1 @builtin.string_eq(i32 %7, i32 %9)
+	%10 = icmp eq i32 %7, %9
 	br i1 %10, label %cond.then.1, label %cond.else.1
 cond.then.1:
 	call void @foo1()
@@ -79,7 +79,7 @@ cond.else.0:
 	%12 = add i32 %11, 1
 	store i32 %12, ptr %a.1
 	%13 = load i32, ptr %b.1
-	%14 = call i1 @builtin.string_eq(i32 %11, i32 %13)
+	%14 = icmp eq i32 %11, %13
 	br i1 %14, label %cond.then.2, label %cond.else.2
 cond.then.2:
 	%15 = load i32, ptr %b.1
@@ -89,7 +89,7 @@ cond.then.2:
 	%18 = load i32, ptr %c.1
 	%19 = add i32 %18, 1
 	store i32 %19, ptr %c.1
-	%20 = call i1 @builtin.string_eq(i32 %17, i32 %18)
+	%20 = icmp eq i32 %17, %18
 	br i1 %20, label %cond.then.3, label %cond.else.3
 cond.then.3:
 	call void @foo3()

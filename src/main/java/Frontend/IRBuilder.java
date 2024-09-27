@@ -628,7 +628,7 @@ public class IRBuilder implements ASTVisitor {
         switch (it.op) {
             // standard operators
             case "+":
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     res = getNamelessVariable(new IRIntType(32));
                     currentBlock.body.add(new IRBinaryInst(res, lhsValue, rhsValue, "add"));
                 } else { // string addition
@@ -655,7 +655,7 @@ public class IRBuilder implements ASTVisitor {
             // cmp operators
             case "<":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "slt"));
                 } else {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_le", lhsValue, rhsValue));
@@ -663,7 +663,7 @@ public class IRBuilder implements ASTVisitor {
                 break;
             case "<=":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sle"));
                 } else {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_leq", lhsValue, rhsValue));
@@ -671,7 +671,7 @@ public class IRBuilder implements ASTVisitor {
                 break;
             case ">":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sgt"));
                 } else {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_ge", lhsValue, rhsValue));
@@ -679,7 +679,7 @@ public class IRBuilder implements ASTVisitor {
                 break;
             case ">=":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "sge"));
                 } else {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_geq", lhsValue, rhsValue));
@@ -687,7 +687,7 @@ public class IRBuilder implements ASTVisitor {
                 break;
             case "==":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "eq"));
                 } else {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_eq", lhsValue, rhsValue));
@@ -695,7 +695,7 @@ public class IRBuilder implements ASTVisitor {
                 break;
             case "!=":
                 res = getNamelessVariable(new IRIntType(1));
-                if (it.type.name.equals("int")) {
+                if (it.lhs.type.name.equals("int")) {
                     currentBlock.body.add(new IRIcmpInst(res, lhsValue, rhsValue, "ne"));
                 } else {
                     currentBlock.body.add(new IRCallInst(res, "builtin.string_ne", lhsValue, rhsValue));
