@@ -146,7 +146,9 @@ public class IRBuilder implements ASTVisitor {
             if (curScope.parentScope == globalScope && it.name.equals("main")) {
                 currentBlock.body.add(new IRRetInst(new IRIntConst(0)));
             } else {
-                currentBlock.body.add(new IRRetInst(null)); // void functions may have no return stmt
+                if (irFuncDef.retType.equals(new IRVoidType())) {
+                    currentBlock.body.add(new IRRetInst(null)); // void functions may have no return stmt
+                }
             }
             submitBlock();
         }
@@ -247,7 +249,17 @@ public class IRBuilder implements ASTVisitor {
     }
 
     private void submitBlock() {
-        currentBlock.func.body.add(currentBlock);
+        if (!currentBlock.body.isEmpty()) { // unreachable block
+            /*
+            if (cond) {
+                return;
+            } else {
+                return:
+             }
+             <End Of Function>
+             */
+            currentBlock.func.body.add(currentBlock);
+        }
         currentBlock = null; // useless but appropriate
     }
 
