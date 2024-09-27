@@ -173,6 +173,7 @@ public class IRBuilder implements ASTVisitor {
                 IRValue value = getValueResult(pair.second.isLeft);
                 currentBlock.body.add(new IRStoreInst(value, newVarPtr));
 
+                initBlock = currentBlock;
                 currentBlock = prevBlock;
             }
         } else {

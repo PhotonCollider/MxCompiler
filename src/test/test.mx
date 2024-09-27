@@ -1,61 +1,65 @@
 /*
 Test Package: Codegen
-Author: 14' Shichao Xu
+Author: 15' Yiran Wu
 Time: 2020-01-25
 Input:
 === input ===
 === end ===
 Output:
 === output ===
-1
-1029
-171
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
+str1str2str3str4str5str6str7str8str9str10
 === end ===
 ExitCode: 0
 InstLimit: -1
-Origin Package: Codegen Pretest-534
+Origin Package: Codegen Pretest-539
 */
 
-int gcd(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd5(y, x%y);
-}
+int[][] a=new int[30][30];
+string[] str=new string[30];
+int main()
+{
+	int i;
+	int j;
+	for(i=0;i<=29;i++)
+	{
+		int sum=0;
+		str[i]=toString(a[i][0]);
+		for(j=0;j<i;j++)
+		{
+			if((j & 1)==0) sum=sum+a[i][0];
+			if((j & 1)==1) sum=sum+a[i][29];
+		}
+		println("str1"+"str2"+"str3"+"str4"+"str5"+"str6"+"str7"+"str8"+"str9"+"str10");
 
-
-int gcd1(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd(y, x%y);
-}
-
-
-int gcd2(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd1(y, x%y);
-}
-
-
-
-int gcd3(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd2(y, x%y);
-}
-
-
-int gcd4(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd(y, x%y);
-}
-
-
-int gcd5(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd2(y, x%y);
-}
-
-int main() {
-    println(toString(gcd(10,1)));
-    println(toString(gcd(34986,3087)));
-    println(toString(gcd(2907,1539)));
-
-    return 0;
+	}
+	return 0;
 }
