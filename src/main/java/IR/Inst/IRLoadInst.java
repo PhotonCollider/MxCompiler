@@ -5,8 +5,8 @@ import IR.Value.IRValue;
 import IR.Value.Var.IRLocalVar;
 
 public class IRLoadInst extends IRInst {
-    IRLocalVar result;
-    IRValue ptr;
+    public IRLocalVar result;
+    public IRValue ptr;
 
     public IRLoadInst(IRLocalVar result, IRValue ptr) {
         this.result = result;

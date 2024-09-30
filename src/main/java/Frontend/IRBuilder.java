@@ -833,7 +833,7 @@ public class IRBuilder implements ASTVisitor {
             IRGlobalVar globalVar = (IRGlobalVar) globalScope.IRAddVar(
                     "FString." + FStringCnt + ".Literal." + i,
                     new IRPtrType(new IRIntType(8))); // a char, actually
-            prog.fStrings.add(new IRStringLiteralDef(globalVar, str));
+            prog.fStringFragments.add(new IRStringLiteralDef(globalVar, str));
             strList.add(globalVar);
         }
 

@@ -4,7 +4,8 @@ import IR.Type.IRType;
 import IR.Value.IRValue;
 
 public class IRLocalVar extends IRValue {
-    final String name;
+    public final String name;
+    public int stackOffset;
 
     public IRLocalVar(String name, IRType type) {
         super(type);

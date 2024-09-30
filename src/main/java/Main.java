@@ -1,8 +1,9 @@
 import java.io.*;
 
-import ASM.Module.ASMRootNode;
+import ASM.Module.ASMProgramNode;
 import AST.RootNode;
 import Backend.ASMBuilder;
+import Backend.StackManager;
 import Frontend.ASTBuilder;
 import Frontend.IRBuilder;
 import Frontend.SemanticChecker;
@@ -24,6 +25,7 @@ public class Main {
         FileWriter fileOutput = usingStdio ? null : new FileWriter("./src/test/test.ll");
         boolean emitLLVM = args[1].equals("-emit-llvm");
         try {
+            // parse
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
             lexer.addErrorListener(new MxErrorListener());
@@ -32,6 +34,7 @@ public class Main {
             parser.addErrorListener(new MxErrorListener());
             ParseTree parseTreeRoot = parser.program();
 
+            // AST
             GlobalScope gScope = new GlobalScope();
             ASTBuilder astBuilder = new ASTBuilder();
             RootNode ast = (RootNode) astBuilder.visit(parseTreeRoot);
@@ -39,10 +42,10 @@ public class Main {
             new SymbolCollector(gScope).visit(ast);
             new SemanticChecker(gScope).visit(ast);
 
+            // IR
             IRBuilder irBuilder = new IRBuilder(gScope);
             irBuilder.visit(ast);
             IRProgramNode irProgramNode = irBuilder.getProgram();
-
             if (emitLLVM) {
                 if (usingStdio) {
                     System.out.println(irProgramNode);
@@ -52,16 +55,19 @@ public class Main {
                     fileOutput.close();
                 }
             } else {
-                ASMBuilder asmBuilder = new ASMBuilder();
-                asmBuilder.visit(irProgramNode);
-                ASMRootNode ASMRoot = asmBuilder.getProgram();
-                if (usingStdio) {
-                    System.out.println(ASMRoot);
-                } else {
-                    fileOutput.write(ASMRoot.toString());
-                    fileOutput.flush();
-                    fileOutput.close();
-                }
+                // ASM
+                new StackManager().visit(irProgramNode);
+
+//                ASMBuilder asmBuilder = new ASMBuilder();
+//                asmBuilder.visit(irProgramNode);
+//                ASMProgramNode asmProgramNode = asmBuilder.getProgram();
+//                if (usingStdio) {
+//                    System.out.println(asmProgramNode);
+//                } else {
+//                    fileOutput.write(asmProgramNode.toString());
+//                    fileOutput.flush();
+//                    fileOutput.close();
+//                }
             }
         } catch (Error er) {
             System.err.println(er);

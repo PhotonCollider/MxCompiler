@@ -13,7 +13,7 @@ public class IRProgramNode extends IRNode {
     public HashMap<String, IRStructDef> structDefMap;
     public ArrayList<IRGlobalVarDef> globalVarDefs;
     public ArrayList<IRStringLiteralDef> stringLiterals;
-    public ArrayList<IRStringLiteralDef> fStrings;
+    public ArrayList<IRStringLiteralDef> fStringFragments;
     public ArrayList<IRGlobalVarDef> arrayLiterals;
     public ArrayList<IRFuncDecl> funcDecls;
     public HashMap<String, IRFuncDef> funcDefMap;
@@ -22,7 +22,7 @@ public class IRProgramNode extends IRNode {
         structDefMap = new HashMap<>();
         globalVarDefs = new ArrayList<>();
         stringLiterals = new ArrayList<>();
-        fStrings = new ArrayList<>();
+        fStringFragments = new ArrayList<>();
         arrayLiterals = new ArrayList<>();
         funcDecls = new ArrayList<>();
         funcDefMap = new HashMap<>();
@@ -83,8 +83,8 @@ public class IRProgramNode extends IRNode {
             sb.append(stringLiteral);
         }
         sb.append("\n;Definition Of Formatted String Fragments\n");
-        for (var fString : fStrings) {
-            sb.append(fString);
+        for (var fragment : fStringFragments) {
+            sb.append(fragment);
         }
         sb.append("\n;Definition Of Array Literals\n");
         for (var arrayLiteral : arrayLiterals) {

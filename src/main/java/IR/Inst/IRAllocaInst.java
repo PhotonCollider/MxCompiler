@@ -3,11 +3,12 @@ package IR.Inst;
 import IR.IRVisitor;
 import IR.Type.IRPtrType;
 import IR.Value.IRValue;
+import IR.Value.Var.IRLocalVar;
 
 public class IRAllocaInst extends IRInst {
-    IRValue ptr;
+    public IRLocalVar ptr;
 
-    public IRAllocaInst(IRValue ptr) {
+    public IRAllocaInst(IRLocalVar ptr) {
         this.ptr = ptr;
     }
 

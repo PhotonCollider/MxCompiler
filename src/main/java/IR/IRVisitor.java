@@ -4,7 +4,7 @@ import IR.Inst.*;
 import IR.Module.*;
 
 public interface IRVisitor {
-    void visit(IRBinaryInst IRBinaryInst);
+    void visit(IRBinaryInst irBinaryInst);
 
     void visit(IRBasicBlock irBasicBlock);
 

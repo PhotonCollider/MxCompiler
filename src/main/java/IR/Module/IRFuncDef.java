@@ -6,21 +6,24 @@ import IR.Type.IRType;
 import IR.Value.Var.IRLocalVar;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class IRFuncDef extends IRNode {
     public String name;
     public IRType retType;
     public List<IRBasicBlock> body;
     public List<IRLocalVar> args;
-//    public Set<IRLocalVar> localVarSet;
+    public List<IRLocalVar> localVarSet; // for ASMBuilder
+    public int stackSize;
 
     public IRFuncDef(String name, IRType retType) {
         this.name = name;
         this.retType = retType;
         body = new ArrayList<>();
         args = new ArrayList<>();
-//        localVarSet = new HashSet<>();
+        localVarSet = new ArrayList<>();
     }
 
     @Override
