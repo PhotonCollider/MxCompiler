@@ -9,7 +9,7 @@ import IR.Type.IRIntType;
 import IR.Type.IRPtrType;
 import IR.Type.IRVoidType;
 
-public class IRRootNode extends IRNode {
+public class IRProgramNode extends IRNode {
     public HashMap<String, IRStructDef> structDefMap;
     public ArrayList<IRGlobalVarDef> globalVarDefs;
     public ArrayList<IRStringLiteralDef> stringLiterals;
@@ -18,7 +18,7 @@ public class IRRootNode extends IRNode {
     public ArrayList<IRFuncDecl> funcDecls;
     public HashMap<String, IRFuncDef> funcDefMap;
 
-    public IRRootNode() {
+    public IRProgramNode() {
         structDefMap = new HashMap<>();
         globalVarDefs = new ArrayList<>();
         stringLiterals = new ArrayList<>();

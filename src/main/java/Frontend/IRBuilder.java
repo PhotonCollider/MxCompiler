@@ -28,21 +28,26 @@ import Util.type.Type;
 import java.util.ArrayList;
 
 public class IRBuilder implements ASTVisitor {
-    public final GlobalScope globalScope;
+    private final GlobalScope globalScope;
     private SuiteScope curScope;
-    public IRRootNode root;
+    private final IRProgramNode prog;
     private boolean visitedClassDef;
     private IRBasicBlock currentBlock, initBlock;
     private IRValue curExprValue;
     private IRBasicBlock continueDest, breakDest;
     // continueDest could be update expr (in for stmts) or cond expr (in while stmts)
     // BreadDest can only be loopEnd
+
     private int allocateArrayForId = 0, arrayLiteralCnt = 0, stringLiteralCnt = 0, FStringCnt = 0, logicBinaryCnt = 0,
             condExprID = 0, namelessVarCnt = 0;
 
-    public IRBuilder(GlobalScope globalScope, IRRootNode root) {
+    public IRBuilder(GlobalScope globalScope) {
         curScope = this.globalScope = globalScope;
-        this.root = root;
+        prog = new IRProgramNode();
+    }
+
+    public IRProgramNode getProgram() {
+        return prog;
     }
 
     @Override
@@ -75,7 +80,7 @@ public class IRBuilder implements ASTVisitor {
         }
         initBlock.body.add(new IRRetInst(null));
         initFnDef.body.add(initBlock);
-        root.funcDefMap.put(initFnDef.name, initFnDef);
+        prog.funcDefMap.put(initFnDef.name, initFnDef);
     }
 
     @Override
@@ -98,7 +103,7 @@ public class IRBuilder implements ASTVisitor {
             for (var fnDef : it.fnDefs) {
                 irStructDef.memberFuncSet.add(fnDef.name);
             }
-            root.structDefMap.put(it.name, irStructDef);
+            prog.structDefMap.put(it.name, irStructDef);
         } else {
             for (var fnDef : it.fnDefs) {
                 fnDef.accept(this);
@@ -152,7 +157,7 @@ public class IRBuilder implements ASTVisitor {
             }
             submitBlock();
         }
-        root.funcDefMap.put(fullName, irFuncDef);
+        prog.funcDefMap.put(fullName, irFuncDef);
         curScope = curScope.parentScope;
     }
 
@@ -162,7 +167,7 @@ public class IRBuilder implements ASTVisitor {
         if (curScope instanceof GlobalScope) {
             for (var pair : it.list) {
                 IRGlobalVar newVarPtr = (IRGlobalVar) curScope.IRAddVar(pair.first, new IRPtrType(type));
-                root.globalVarDefs.add(new IRGlobalVarDef(newVarPtr));
+                prog.globalVarDefs.add(new IRGlobalVarDef(newVarPtr));
                 if (pair.second == null) {
                     continue;
                 }
@@ -251,7 +256,7 @@ public class IRBuilder implements ASTVisitor {
 
     private void submitBlock() {
         if (!currentBlock.body.isEmpty()) { // unreachable block
-            /*
+            /* EXAMPLE:
             if (cond) {
                 return;
             } else {
@@ -437,7 +442,7 @@ public class IRBuilder implements ASTVisitor {
         currentBlock.body.add(new IRGetelementptrInst(nxtPtr, ret, readForCnt, -1));
         if (type.dim == 2 && type.base instanceof IRStructType) {
             String className = ((IRStructType) type.base).name;
-            IRStructDef structDef = root.structDefMap.get(className);
+            IRStructDef structDef = prog.structDefMap.get(className);
             IRLocalVar res = getNamelessVariable(type.dereference());
             currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.sizeInBytes())));
             if (structDef.hasConstructor) {
@@ -464,7 +469,7 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(ArrayLiteralNode it) {
         IRGlobalVar arrayLiteral = new IRGlobalVar(new IRPtrType(it.type.toIR()), "arrayLiteral." + arrayLiteralCnt);
-        root.arrayLiterals.add(new IRGlobalVarDef(arrayLiteral));
+        prog.arrayLiterals.add(new IRGlobalVarDef(arrayLiteral));
 
         IRBasicBlock prevBlock = currentBlock;
         currentBlock = initBlock;
@@ -505,7 +510,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(NewVariableExprNode it) {
-        IRStructDef structDef = root.structDefMap.get(it.type.name);
+        IRStructDef structDef = prog.structDefMap.get(it.type.name);
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
         currentBlock.body.add(new IRCallInst(res, "builtin.calloc", new IRIntConst(structDef.struct.sizeInBytes())));
         if (structDef.hasConstructor) {
@@ -536,7 +541,7 @@ public class IRBuilder implements ASTVisitor {
             }
             String functionName = ((IdentifierNode) it.fnName).name;
             if (curScope.getClassName() != null &&
-                    root.structDefMap.get(curScope.getClassName()).memberFuncSet.contains(functionName)) {
+                    prog.structDefMap.get(curScope.getClassName()).memberFuncSet.contains(functionName)) {
                 callInst = new IRCallInst(null, curScope.getClassName() + "." + functionName);
                 callInst.args.add(currentBlock.func.args.get(0));
             } else {
@@ -573,7 +578,7 @@ public class IRBuilder implements ASTVisitor {
     public void visit(MemberAccessExprNode it) {
         it.instanceName.accept(this);
         IRValue instance = getValueResult(it.instanceName.isLeft);
-        int id = root.structDefMap.get(((IRStructType) ((IRPtrType) instance.type).base).name).struct.varToIdMap
+        int id = prog.structDefMap.get(((IRStructType) ((IRPtrType) instance.type).base).name).struct.varToIdMap
                 .get(it.member);
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
         currentBlock.body.add(new IRGetelementptrInst(res, instance, null, id));
@@ -828,7 +833,7 @@ public class IRBuilder implements ASTVisitor {
             IRGlobalVar globalVar = (IRGlobalVar) globalScope.IRAddVar(
                     "FString." + FStringCnt + ".Literal." + i,
                     new IRPtrType(new IRIntType(8))); // a char, actually
-            root.fStrings.add(new IRStringLiteralDef(globalVar, str));
+            prog.fStrings.add(new IRStringLiteralDef(globalVar, str));
             strList.add(globalVar);
         }
 
@@ -862,8 +867,8 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(IdentifierNode it) {
         if (curScope.getClassName() != null) { // class member var
-            if (root.structDefMap.get(curScope.getClassName()).struct.varToIdMap.containsKey(it.name)) { // this.member
-                Integer id = root.structDefMap.get(curScope.getClassName()).struct.varToIdMap.get(it.name);
+            if (prog.structDefMap.get(curScope.getClassName()).struct.varToIdMap.containsKey(it.name)) { // this.member
+                Integer id = prog.structDefMap.get(curScope.getClassName()).struct.varToIdMap.get(it.name);
                 IRValue thiss = currentBlock.func.args.get(0);
                 IRLocalVar ptr = getNamelessVariable(new IRPtrType(it.type.toIR()));
                 currentBlock.body.add(new IRGetelementptrInst(ptr, thiss, null, id));
@@ -885,7 +890,7 @@ public class IRBuilder implements ASTVisitor {
         IRGlobalVar globalVar = (IRGlobalVar) globalScope.IRAddVar("stringLiteral." + stringLiteralCnt,
                 new IRPtrType(new IRIntType(8))); // a char, actually
         stringLiteralCnt++;
-        root.stringLiterals.add(new IRStringLiteralDef(globalVar, it.str));
+        prog.stringLiterals.add(new IRStringLiteralDef(globalVar, it.str));
         curExprValue = globalVar;
     }
 
@@ -915,7 +920,7 @@ public class IRBuilder implements ASTVisitor {
             currentBlock.body.add(new IRRetInst(null));
             submitBlock();
         }
-        root.funcDefMap.put(fullName, irFuncDef);
+        prog.funcDefMap.put(fullName, irFuncDef);
         curScope = curScope.parentScope;
     }
 

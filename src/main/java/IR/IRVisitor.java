@@ -38,7 +38,7 @@ public interface IRVisitor {
 
     void visit(IRStringLiteralDef irStringLiteralDef);
 
-    void visit(IRRootNode irRootNode);
+    void visit(IRProgramNode irProgramNode);
 
     void visit(IRBrInst irBrInst);
 }
