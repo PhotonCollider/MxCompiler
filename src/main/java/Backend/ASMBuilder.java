@@ -5,7 +5,7 @@ import IR.IRVisitor;
 import IR.Module.*;
 
 public abstract class ASMBuilder implements IRVisitor {
-    private ASMProgramNode prog;
+    private final ASMProgramNode prog;
 
     public ASMBuilder() {
         prog = new ASMProgramNode();

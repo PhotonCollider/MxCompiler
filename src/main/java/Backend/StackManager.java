@@ -27,7 +27,7 @@ public class StackManager implements IRVisitor {
     @Override
     public void visit(IRFuncDef irFuncDef) {
         curFunc = irFuncDef;
-        curSizeSum = 0;
+        curSizeSum = 4; // return address
         curFuncMaxCallArg = 0;
         for (var block : irFuncDef.body) {
             block.accept(this);
