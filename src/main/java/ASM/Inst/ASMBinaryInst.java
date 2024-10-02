@@ -25,6 +25,6 @@ public class ASMBinaryInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("%s %s, %s, ", op, res, rs1) + (isImmediate ? imm : rs2);
+        return String.format("%s\t%s, %s, ", op, res, rs1) + (isImmediate ? imm : rs2);
     }
 }

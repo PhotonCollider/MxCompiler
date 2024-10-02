@@ -9,6 +9,6 @@ public class ASMJInst extends ASMInst {
 
     @Override
     public String toString() {
-        return "j " + dest;
+        return "j\t" + dest;
     }
 }

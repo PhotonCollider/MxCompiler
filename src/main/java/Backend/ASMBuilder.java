@@ -82,6 +82,7 @@ public class ASMBuilder implements IRVisitor {
         }
         curBlock.body.add(new ASMLwInst("ra", "sp", curFunc.stackSize - 4));
         curBlock.body.add(new ASMBinaryInst("addi", "sp", "sp", curFunc.stackSize));
+        curBlock.body.add(new ASMRetInst());
         prog.text.blocks.add(curBlock);
         curBlock = null;
     }

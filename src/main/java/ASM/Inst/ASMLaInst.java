@@ -11,6 +11,6 @@ public class ASMLaInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("la %s, %s", reg, label);
+        return String.format("la\t%s, %s", reg, label);
     }
 }

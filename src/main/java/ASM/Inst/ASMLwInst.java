@@ -12,6 +12,6 @@ public class ASMLwInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("lw %s, %d(%s)", rd, offset, rs1);
+        return String.format("lw\t%s, %d(%s)", rd, offset, rs1);
     }
 }

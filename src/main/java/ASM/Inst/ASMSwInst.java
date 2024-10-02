@@ -12,6 +12,6 @@ public class ASMSwInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("sw %s, %d(%s)", rs2, offset, rs1);
+        return String.format("sw\t%s, %d(%s)", rs2, offset, rs1);
     }
 }

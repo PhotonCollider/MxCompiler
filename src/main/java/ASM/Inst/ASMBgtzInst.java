@@ -10,6 +10,6 @@ public class ASMBgtzInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("bgtz %s, %s", rs1, offset);
+        return String.format("bgtz\t%s, %s", rs1, offset);
     }
 }

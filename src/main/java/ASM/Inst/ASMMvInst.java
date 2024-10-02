@@ -10,6 +10,6 @@ public class ASMMvInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("mv %s, %s", rd, rs1);
+        return String.format("mv\t%s, %s", rd, rs1);
     }
 }

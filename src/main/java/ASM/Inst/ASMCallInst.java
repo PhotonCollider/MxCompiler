@@ -9,6 +9,6 @@ public class ASMCallInst extends ASMInst {
 
     @Override
     public String toString() {
-        return "call " + fn;
+        return "call\t" + fn;
     }
 }

@@ -11,6 +11,6 @@ public class ASMLiInst extends ASMInst {
 
     @Override
     public String toString() {
-        return String.format("li %s, %d", reg, val);
+        return String.format("li\t%s, %d", reg, val);
     }
 }
