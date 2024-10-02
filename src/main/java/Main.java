@@ -1,6 +1,6 @@
 import java.io.*;
 
-import ASM.Module.ASMProgramNode;
+import ASM.Module.ASMProgram;
 import AST.RootNode;
 import Backend.ASMBuilder;
 import Backend.StackManager;
@@ -22,8 +22,8 @@ public class Main {
         String fileInputPath = "./src/test/test.mx";
         boolean usingStdio = ioStr.equals("-use-stdio");
         InputStream input = usingStdio ? System.in : new FileInputStream(fileInputPath);
-        FileWriter fileOutput = usingStdio ? null : new FileWriter("./src/test/test.ll");
         boolean emitLLVM = args[1].equals("-emit-llvm");
+        FileWriter fileOutput = usingStdio ? null : (emitLLVM ? new FileWriter("./src/test/test.ll") : new FileWriter("./src/test/test.s"));
         try {
             // parse
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
@@ -58,16 +58,16 @@ public class Main {
                 // ASM
                 new StackManager().visit(irProgramNode);
 
-//                ASMBuilder asmBuilder = new ASMBuilder();
-//                asmBuilder.visit(irProgramNode);
-//                ASMProgramNode asmProgramNode = asmBuilder.getProgram();
-//                if (usingStdio) {
-//                    System.out.println(asmProgramNode);
-//                } else {
-//                    fileOutput.write(asmProgramNode.toString());
-//                    fileOutput.flush();
-//                    fileOutput.close();
-//                }
+                ASMBuilder asmBuilder = new ASMBuilder();
+                asmBuilder.visit(irProgramNode);
+                ASMProgram asmProgramNode = asmBuilder.getProgram();
+                if (usingStdio) {
+                    System.out.println(asmProgramNode);
+                } else {
+                    fileOutput.write(asmProgramNode.toString());
+                    fileOutput.flush();
+                    fileOutput.close();
+                }
             }
         } catch (Error er) {
             System.err.println(er);

@@ -8,7 +8,7 @@ import IR.Type.IRType;
 import IR.Value.Var.IRGlobalVar;
 
 public class IRGlobalVarDef extends IRNode {
-    IRGlobalVar variable;
+    public IRGlobalVar variable;
 
     public IRGlobalVarDef(IRGlobalVar variable) {
         this.variable = variable;
@@ -20,7 +20,7 @@ public class IRGlobalVarDef extends IRNode {
         if (baseType instanceof IRIntType) {
             return String.format("@%s = global %s 0\n", variable.name, baseType);
         } else {
-            return String.format("@%s = global ptr null\n", variable.name, variable.type);
+            return String.format("@%s = global ptr null\n", variable.name);
         }
     }
 

@@ -4,7 +4,7 @@ import IR.IRVisitor;
 import IR.Module.IRBasicBlock;
 
 public class IRJumpInst extends IRInst {
-    IRBasicBlock dest;
+    public IRBasicBlock dest;
 
     public IRJumpInst(IRBasicBlock dest) {
         this.dest = dest;

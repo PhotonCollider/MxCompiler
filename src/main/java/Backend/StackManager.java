@@ -42,6 +42,9 @@ public class StackManager implements IRVisitor {
         for (int i = 8; i < irFuncDef.args.size(); i++) {
             irFuncDef.args.get(i).stackOffset = irFuncDef.stackSize + (i - 8) * 4;
         }
+        for (int i = 0; i < Math.min(8, irFuncDef.args.size()); i++) {
+            irFuncDef.args.get(i).reg = "a" + i;
+        }
     }
 
     @Override

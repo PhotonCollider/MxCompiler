@@ -4,7 +4,7 @@ import IR.Type.IRIntType;
 import IR.Value.IRValue;
 
 public class IRIntConst extends IRValue {
-    final int val;
+    public final int val;
 
     public IRIntConst(int val) {
         super(new IRIntType(32));

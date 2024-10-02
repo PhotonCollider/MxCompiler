@@ -5,8 +5,8 @@ import IR.Module.IRBasicBlock;
 import IR.Value.IRValue;
 
 public class IRBrInst extends IRInst{
-    IRBasicBlock trueBlock, falseBlock;
-    IRValue cond;
+    public IRBasicBlock trueBlock, falseBlock;
+    public IRValue cond;
 
     public IRBrInst(IRBasicBlock trueBlock, IRBasicBlock falseBlock, IRValue cond) {
         this.trueBlock = trueBlock;

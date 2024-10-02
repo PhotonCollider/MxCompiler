@@ -4,7 +4,7 @@ import IR.IRVisitor;
 import IR.Value.IRValue;
 
 public class IRRetInst extends IRInst {
-    IRValue retVal;
+    public IRValue retVal;
 
     public IRRetInst(IRValue retVal) {
         this.retVal = retVal;
