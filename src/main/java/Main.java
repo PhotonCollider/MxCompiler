@@ -18,11 +18,11 @@ import Util.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String ioStr = args[0];
+        String ioStr = args[0], llvmStr = args[1];
         String fileInputPath = "./src/test/test.mx";
         boolean usingStdio = ioStr.equals("-use-stdio");
         InputStream input = usingStdio ? System.in : new FileInputStream(fileInputPath);
-        boolean emitLLVM = args[1].equals("-emit-llvm");
+        boolean emitLLVM = llvmStr.equals("-emit-llvm");
         FileWriter fileOutput = usingStdio ? null : (emitLLVM ? new FileWriter("./src/test/test.ll") : new FileWriter("./src/test/test.s"));
         try {
             // parse
