@@ -19,6 +19,10 @@ import Util.*;
 public class Main {
     public static void main(String[] args) throws Exception {
         String ioStr = args[0], llvmStr = args[1];
+        if (ioStr.equals("-h") || ioStr.equals("--help")) {
+            System.out.println("usage:\t -use-stdio -emit-llvm");
+            return;
+        }
         String fileInputPath = "./src/test/test.mx";
         boolean usingStdio = ioStr.equals("-use-stdio");
         InputStream input = usingStdio ? System.in : new FileInputStream(fileInputPath);
@@ -49,7 +53,8 @@ public class Main {
             if (emitLLVM || !usingStdio) {
                 if (usingStdio) {
                     System.out.println(irProgramNode);
-                } else {
+                    System.exit(0);
+                } else { // debug
                     fileOutput = new FileWriter("./src/test/test.ll");
                     fileOutput.write(irProgramNode.toString());
                     fileOutput.flush();
