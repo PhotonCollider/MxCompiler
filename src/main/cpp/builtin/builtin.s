@@ -365,10 +365,10 @@ builtin.malloc_array:                   # @builtin.malloc_array
 .Lfunc_end17:
 	.size	builtin.malloc_array, .Lfunc_end17-builtin.malloc_array
                                         # -- End function
-	.globl	builtin.string.add              # -- Begin function builtin.string.add
+	.globl	builtin.string_add              # -- Begin function builtin.string_add
 	.p2align	1
-	.type	builtin.string.add,@function
-builtin.string.add:                     # @builtin.string.add
+	.type	builtin.string_add,@function
+builtin.string_add:                     # @builtin.string_add
 # %bb.0:
 	addi	sp, sp, -32
 	sw	ra, 28(sp)                      # 4-byte Folded Spill
@@ -401,12 +401,12 @@ builtin.string.add:                     # @builtin.string.add
 	addi	sp, sp, 32
 	ret
 .Lfunc_end18:
-	.size	builtin.string.add, .Lfunc_end18-builtin.string.add
+	.size	builtin.string_add, .Lfunc_end18-builtin.string_add
                                         # -- End function
-	.globl	builtin.string.eq               # -- Begin function builtin.string.eq
+	.globl	builtin.string_eq               # -- Begin function builtin.string_eq
 	.p2align	1
-	.type	builtin.string.eq,@function
-builtin.string.eq:                      # @builtin.string.eq
+	.type	builtin.string_eq,@function
+builtin.string_eq:                      # @builtin.string_eq
 # %bb.0:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)                      # 4-byte Folded Spill
@@ -416,12 +416,12 @@ builtin.string.eq:                      # @builtin.string.eq
 	addi	sp, sp, 16
 	ret
 .Lfunc_end19:
-	.size	builtin.string.eq, .Lfunc_end19-builtin.string.eq
+	.size	builtin.string_eq, .Lfunc_end19-builtin.string_eq
                                         # -- End function
-	.globl	builtin.string.ge               # -- Begin function builtin.string.ge
+	.globl	builtin.string_ge               # -- Begin function builtin.string_ge
 	.p2align	1
-	.type	builtin.string.ge,@function
-builtin.string.ge:                      # @builtin.string.ge
+	.type	builtin.string_ge,@function
+builtin.string_ge:                      # @builtin.string_ge
 # %bb.0:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)                      # 4-byte Folded Spill
@@ -433,12 +433,12 @@ builtin.string.ge:                      # @builtin.string.ge
 	addi	sp, sp, 16
 	ret
 .Lfunc_end20:
-	.size	builtin.string.ge, .Lfunc_end20-builtin.string.ge
+	.size	builtin.string_ge, .Lfunc_end20-builtin.string_ge
                                         # -- End function
-	.globl	builtin.string.geq              # -- Begin function builtin.string.geq
+	.globl	builtin.string_geq              # -- Begin function builtin.string_geq
 	.p2align	1
-	.type	builtin.string.geq,@function
-builtin.string.geq:                     # @builtin.string.geq
+	.type	builtin.string_geq,@function
+builtin.string_geq:                     # @builtin.string_geq
 # %bb.0:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)                      # 4-byte Folded Spill
@@ -449,12 +449,12 @@ builtin.string.geq:                     # @builtin.string.geq
 	addi	sp, sp, 16
 	ret
 .Lfunc_end21:
-	.size	builtin.string.geq, .Lfunc_end21-builtin.string.geq
+	.size	builtin.string_geq, .Lfunc_end21-builtin.string_geq
                                         # -- End function
-	.globl	builtin.string.le               # -- Begin function builtin.string.le
+	.globl	builtin.string_le               # -- Begin function builtin.string_le
 	.p2align	1
-	.type	builtin.string.le,@function
-builtin.string.le:                      # @builtin.string.le
+	.type	builtin.string_le,@function
+builtin.string_le:                      # @builtin.string_le
 # %bb.0:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)                      # 4-byte Folded Spill
@@ -464,12 +464,12 @@ builtin.string.le:                      # @builtin.string.le
 	addi	sp, sp, 16
 	ret
 .Lfunc_end22:
-	.size	builtin.string.le, .Lfunc_end22-builtin.string.le
+	.size	builtin.string_le, .Lfunc_end22-builtin.string_le
                                         # -- End function
-	.globl	builtin.string.leq              # -- Begin function builtin.string.leq
+	.globl	builtin.string_leq              # -- Begin function builtin.string_leq
 	.p2align	1
-	.type	builtin.string.leq,@function
-builtin.string.leq:                     # @builtin.string.leq
+	.type	builtin.string_leq,@function
+builtin.string_leq:                     # @builtin.string_leq
 # %bb.0:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)                      # 4-byte Folded Spill
@@ -479,12 +479,12 @@ builtin.string.leq:                     # @builtin.string.leq
 	addi	sp, sp, 16
 	ret
 .Lfunc_end23:
-	.size	builtin.string.leq, .Lfunc_end23-builtin.string.leq
+	.size	builtin.string_leq, .Lfunc_end23-builtin.string_leq
                                         # -- End function
-	.globl	builtin.string.ne               # -- Begin function builtin.string.ne
+	.globl	builtin.string_ne               # -- Begin function builtin.string_ne
 	.p2align	1
-	.type	builtin.string.ne,@function
-builtin.string.ne:                      # @builtin.string.ne
+	.type	builtin.string_ne,@function
+builtin.string_ne:                      # @builtin.string_ne
 # %bb.0:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)                      # 4-byte Folded Spill
@@ -494,7 +494,7 @@ builtin.string.ne:                      # @builtin.string.ne
 	addi	sp, sp, 16
 	ret
 .Lfunc_end24:
-	.size	builtin.string.ne, .Lfunc_end24-builtin.string.ne
+	.size	builtin.string_ne, .Lfunc_end24-builtin.string_ne
                                         # -- End function
 	.type	.L.str,@object                  # @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
