@@ -10,11 +10,14 @@ import IR.Value.Var.IRLocalVar;
 public class StackManager implements IRVisitor {
     int curSizeSum = 0, curFuncMaxCallArg = 0;
     IRFuncDef curFunc;
-    static int allocaCnt = 0;
 
     private void addVariable(IRLocalVar v) {
+        if (v.isAllocaResult) {
+            curSizeSum += ((IRPtrType) v.type).dereference().sizeInBytes();
+        } else {
+            curSizeSum += v.type.sizeInBytes();
+        }
         curFunc.localVarSet.add(v);
-        curSizeSum += v.type.sizeInBytes();
     }
 
     @Override
@@ -61,8 +64,8 @@ public class StackManager implements IRVisitor {
 
     @Override
     public void visit(IRAllocaInst irAllocaInst) {
+        irAllocaInst.ptr.isAllocaResult = true;
         addVariable(irAllocaInst.ptr);
-        addVariable(new IRLocalVar("allocaResult." + allocaCnt, ((IRPtrType) irAllocaInst.ptr.type).dereference()));
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Main {
         boolean usingStdio = ioStr.equals("-use-stdio");
         InputStream input = usingStdio ? System.in : new FileInputStream(fileInputPath);
         boolean emitLLVM = llvmStr.equals("-emit-llvm");
-        FileWriter fileOutput = usingStdio ? null : (emitLLVM ? new FileWriter("./src/test/test.ll") : new FileWriter("./src/test/test.s"));
+        FileWriter fileOutput;
         try {
             // parse
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
@@ -46,28 +46,29 @@ public class Main {
             IRBuilder irBuilder = new IRBuilder(gScope);
             irBuilder.visit(ast);
             IRProgramNode irProgramNode = irBuilder.getProgram();
-            if (emitLLVM) {
+            if (emitLLVM || !usingStdio) {
                 if (usingStdio) {
                     System.out.println(irProgramNode);
                 } else {
+                    fileOutput = new FileWriter("./src/test/test.ll");
                     fileOutput.write(irProgramNode.toString());
                     fileOutput.flush();
                     fileOutput.close();
                 }
-            } else {
-                // ASM
-                new StackManager().visit(irProgramNode);
+            }
+            // ASM
+            new StackManager().visit(irProgramNode);
 
-                ASMBuilder asmBuilder = new ASMBuilder();
-                asmBuilder.visit(irProgramNode);
-                ASMProgram asmProgramNode = asmBuilder.getProgram();
-                if (usingStdio) {
-                    System.out.println(asmProgramNode);
-                } else {
-                    fileOutput.write(asmProgramNode.toString());
-                    fileOutput.flush();
-                    fileOutput.close();
-                }
+            ASMBuilder asmBuilder = new ASMBuilder();
+            asmBuilder.visit(irProgramNode);
+            ASMProgram asmProgramNode = asmBuilder.getProgram();
+            if (usingStdio) {
+                System.out.println(asmProgramNode);
+            } else {
+                fileOutput = new FileWriter("./src/test/test.s");
+                fileOutput.write(asmProgramNode.toString());
+                fileOutput.flush();
+                fileOutput.close();
             }
         } catch (Error er) {
             System.err.println(er);

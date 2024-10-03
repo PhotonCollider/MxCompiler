@@ -14,10 +14,7 @@ InstLimit: -1
 */
 
 int main() {
-    int[] a = new int[]{2, 0, 2, 4};
-    int n = a.size();
-    for(int i=0;i<n;++i){
-        //printlnInt(a[i]);
+    for(int i=0;i<5;++i){
+
     }
-    return 0;
 }
