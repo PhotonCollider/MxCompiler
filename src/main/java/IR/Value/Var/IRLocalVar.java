@@ -7,12 +7,12 @@ public class IRLocalVar extends IRValue {
     public final String name;
     public int stackOffset;
     public String reg;
-    public boolean isAllocaResult;
+    public boolean isStackPointer;
 
     public IRLocalVar(String name, IRType type) {
         super(type);
         this.name = name;
-        isAllocaResult = false;
+        isStackPointer = false;
     }
 
     @Override

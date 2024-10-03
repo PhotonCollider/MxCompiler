@@ -17,7 +17,7 @@ public class StackManager implements IRVisitor {
     }
 
     private void addVariable(IRLocalVar v) {
-        if (v.isAllocaResult) {
+        if (v.isStackPointer) {
             curSizeSum += ((IRPtrType) v.type).dereference().sizeInBytes();
         } else {
             curSizeSum += v.type.sizeInBytes();
@@ -45,7 +45,7 @@ public class StackManager implements IRVisitor {
         for (int i = 0; i < irFuncDef.localVarSet.size(); i++) {
             irFuncDef.localVarSet.get(i).stackOffset = curOffset;
             if (debugMode) {
-                System.out.println(irFuncDef.localVarSet.get(i).toString() + "\t\tsp(" + curOffset + ')');
+                System.out.println(irFuncDef.localVarSet.get(i).toString() + "\t\t" + curOffset + "(sp)");
             }
             curOffset += irFuncDef.localVarSet.get(i).type.sizeInBytes();
         }
@@ -72,7 +72,7 @@ public class StackManager implements IRVisitor {
 
     @Override
     public void visit(IRAllocaInst irAllocaInst) {
-        irAllocaInst.ptr.isAllocaResult = true;
+        irAllocaInst.ptr.isStackPointer = true;
         addVariable(irAllocaInst.ptr);
     }
 

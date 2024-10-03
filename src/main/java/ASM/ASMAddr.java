@@ -11,6 +11,6 @@ public class ASMAddr {
 
     @Override
     public String toString() {
-        return reg + '(' + offset + ')';
+        return offset + '(' + reg + ')';
     }
 }

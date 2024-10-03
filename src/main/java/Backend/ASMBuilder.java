@@ -129,9 +129,9 @@ public class ASMBuilder implements IRVisitor {
         } else if (val instanceof IRLocalVar localVar) {
             if (localVar.reg != null) { // register value
                 curBlock.body.add(new ASMMvInst(reg, localVar.reg));
-            } else if (localVar.isAllocaResult) {
+            } else if (localVar.isStackPointer) {
                 addAddiInst(reg, "sp", ((IRLocalVar) val).stackOffset, reg.equals("t0") ? "t1" : "t0");
-            } else {
+            } else { // isHeapPointer
                 addLwInst(reg, "sp", ((IRLocalVar) val).stackOffset, "t0");
             }
         }
@@ -145,7 +145,7 @@ public class ASMBuilder implements IRVisitor {
             IRLocalVar localVar = (IRLocalVar) val;
             // this function is used to get the stack addr of a variable
             // so val cannot be a register value
-            if (localVar.isAllocaResult) {
+            if (localVar.isStackPointer) {
                 return new ASMAddr("sp", localVar.stackOffset);
             } else {
                 addLwInst(availableReg, "sp", ((IRLocalVar) val).stackOffset, availableReg.equals("t0") ? "t1" : "t0");
@@ -256,17 +256,16 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRGetelementptrInst irGetelementptrInst) {
-        loadValue("t0", irGetelementptrInst.ptr);
-        loadValue("t1", irGetelementptrInst.id1);
-        loadValue("t2", irGetelementptrInst.result);
+        loadValue("t2", irGetelementptrInst.ptr);
         if (irGetelementptrInst.id2 == -1) { // simple move
+            loadValue("t1", irGetelementptrInst.id1);
             curBlock.body.add(new ASMLiInst("t3", ((IRPtrType) irGetelementptrInst.ptr.type).dereference().sizeInBytes()));
             curBlock.body.add(new ASMBinaryInst("mul", "t4", "t3", "t1"));
-            curBlock.body.add(new ASMBinaryInst("add", "t0", "t0", "t4"));
+            curBlock.body.add(new ASMBinaryInst("add", "t2", "t2", "t4"));
         } else {
-            addAddiInst("t0", "t0", 4 * irGetelementptrInst.id2, "t1");
+            addAddiInst("t2", "t2", 4 * irGetelementptrInst.id2, "t1");
         }
-        addSwInst("t0", "t2", 0, "t1");
+        addSwInst("t2", "sp", irGetelementptrInst.result.stackOffset, "t1");
     }
 
     @Override
