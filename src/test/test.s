@@ -1,4 +1,5 @@
 .text
+	.globl main
 main:
 	addi	sp, sp, -32
 	sw	ra, 28(sp)

@@ -17,7 +17,9 @@ public class ASMBlock extends ASMNode {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(label).append(":\n");
+        if (label != null) {
+            sb.append(label).append(":\n");
+        }
         for (var inst : body) {
             sb.append('\t').append(inst).append('\n');
         }

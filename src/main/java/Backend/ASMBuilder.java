@@ -31,6 +31,9 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRProgramNode irProgramNode) {
+        ASMBlock blk = new ASMBlock(null);
+        blk.body.add(new ASMGloblInst("main"));
+        prog.text.blocks.add(blk);
         for (var funcDef : irProgramNode.funcDefMap.values()) {
             funcDef.accept(this);
         }
