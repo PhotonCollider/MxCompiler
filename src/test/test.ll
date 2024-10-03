@@ -39,18 +39,25 @@ declare i1 @builtin.string_ne(ptr, ptr)
 define i32 @main () {
 main:
 	call void @global.init()
+
 	%i.1 = alloca i32
+
 	store i32 0, ptr %i.1
+
 	br label %for.cond.0
 for.cond.0:
 	%0 = load i32, ptr %i.1
+
 	%1 = icmp slt i32 %0, 5
+
 	br i1 %1, label %for.body.0, label %for.end.0
 for.body.0:
 	br label %for.update.0
 for.update.0:
 	%2 = load i32, ptr %i.1
+
 	%3 = add i32 %2, 1
+
 	store i32 %3, ptr %i.1
 	br label %for.cond.0
 for.end.0:

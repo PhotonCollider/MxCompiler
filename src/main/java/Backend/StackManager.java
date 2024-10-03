@@ -8,8 +8,13 @@ import IR.Value.Var.IRLocalVar;
 
 // initializes stackOffset for all IRLocalVars
 public class StackManager implements IRVisitor {
+    final boolean debugMode;
     int curSizeSum = 0, curFuncMaxCallArg = 0;
     IRFuncDef curFunc;
+
+    public StackManager(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
 
     private void addVariable(IRLocalVar v) {
         if (v.isAllocaResult) {
@@ -39,6 +44,9 @@ public class StackManager implements IRVisitor {
         int curOffset = Math.max(curFuncMaxCallArg - 8, 0) * 4;
         for (int i = 0; i < irFuncDef.localVarSet.size(); i++) {
             irFuncDef.localVarSet.get(i).stackOffset = curOffset;
+            if (debugMode) {
+                System.out.println(irFuncDef.localVarSet.get(i).toString() + "\t\tsp(" + curOffset + ')');
+            }
             curOffset += irFuncDef.localVarSet.get(i).type.sizeInBytes();
         }
         // NOTE: the arguments in fnDef is very different from the arguments in fnCall !!!

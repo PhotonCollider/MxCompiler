@@ -1,5 +1,6 @@
 package Backend;
 
+import ASM.ASMAddr;
 import ASM.Inst.*;
 import ASM.Module.ASMBlock;
 import ASM.Module.ASMProgram;
@@ -110,6 +111,23 @@ public class ASMBuilder implements IRVisitor {
         }
     }
 
+    ASMAddr getAddr(IRValue val, String availableReg) {
+        if (val instanceof IRGlobalVar) {
+            curBlock.body.add(new ASMLaInst(availableReg, ((IRGlobalVar) val).name));
+            return new ASMAddr(availableReg, 0);
+        } else {
+            IRLocalVar localVar = (IRLocalVar) val;
+            // this function is used to get the stack addr of a variable
+            // so val cannot be a register value
+            if (localVar.isAllocaResult){
+                return new ASMAddr("sp", localVar.stackOffset);
+            } else {
+                curBlock.body.add(new ASMLwInst(availableReg, "sp", ((IRLocalVar) val).stackOffset));
+                return new ASMAddr(availableReg, 0);
+            }
+        }
+    }
+
     @Override
     public void visit(IRBasicBlock irBasicBlock) {
         if (curBlock == null) { // first block is constructed in visit(IRFuncDef)
@@ -122,8 +140,8 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRLoadInst irLoadInst) {
-        loadValue("t0", irLoadInst.ptr);
-        curBlock.body.add(new ASMLwInst("t1", "t0", 0));
+        ASMAddr addr = getAddr(irLoadInst.ptr, "t0");
+        curBlock.body.add(new ASMLwInst("t1", addr.reg, addr.offset));
         // all variables except 8 function args are on stack
         curBlock.body.add(new ASMSwInst("t1", "sp", irLoadInst.result.stackOffset));
     }
@@ -166,6 +184,8 @@ public class ASMBuilder implements IRVisitor {
     @Override
     public void visit(IRJumpInst irJumpInst) {
         curBlock.body.add(new ASMJInst(irJumpInst.dest.label));
+        prog.text.blocks.add(curBlock);
+        curBlock = null;
     }
 
     @Override
@@ -197,10 +217,10 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRStoreInst irStoreInst) {
-        loadValue("t0", irStoreInst.ptr);
+        ASMAddr addr = getAddr(irStoreInst.ptr, "t0");
         loadValue("t1", irStoreInst.value);
         // all variables except 8 function args are on stack
-        curBlock.body.add(new ASMSwInst("t1", "t0", 0));
+        curBlock.body.add(new ASMSwInst("t1", addr.reg, addr.offset));
     }
 
     @Override
