@@ -57,7 +57,7 @@ public class Main {
                 }
             }
             // ASM
-            new StackManager(true).visit(irProgramNode);
+            new StackManager(!usingStdio).visit(irProgramNode);
 
             ASMBuilder asmBuilder = new ASMBuilder();
             asmBuilder.visit(irProgramNode);
