@@ -1,6 +1,7 @@
 ;Definition Of Structs
 
 ;Definition Of Global Variables
+@a = global ptr null
 
 ;Definition Of String Literals
 
@@ -39,33 +40,26 @@ declare i1 @builtin.string_ne(ptr, ptr)
 define i32 @main () {
 main:
 	call void @global.init()
-
-	%i.1 = alloca i32
-
-	store i32 0, ptr %i.1
-
-	br label %for.cond.0
-for.cond.0:
-	%0 = load i32, ptr %i.1
-
-	%1 = icmp slt i32 %0, 5
-
-	br i1 %1, label %for.body.0, label %for.end.0
-for.body.0:
-	br label %for.update.0
-for.update.0:
-	%2 = load i32, ptr %i.1
-
-	%3 = add i32 %2, 1
-
-	store i32 %3, ptr %i.1
-	br label %for.cond.0
-for.end.0:
+	%b.1 = alloca ptr
+	%1 = call ptr @builtin.calloc_array(i32 4, i32 4)
+	store ptr %1, ptr %b.1
+	%2 = load ptr, ptr %b.1
+	%3 = getelementptr i32, ptr %2, i32 2
+	store i32 2, ptr %3
+	%4 = load ptr, ptr %b.1
+	store ptr %4, ptr @a
+	%5 = load ptr, ptr @a
+	%6 = getelementptr i32, ptr %5, i32 2
+	%7 = load i32, ptr %6
+	%8 = call ptr @toString(i32 %7)
+	call void @println(ptr %8)
 	ret i32 0
 }
 
 define void @global.init () {
 global.init:
+	%0 = call ptr @builtin.calloc_array(i32 4, i32 4)
+	store ptr %0, ptr @a
 	ret void
 }
 
