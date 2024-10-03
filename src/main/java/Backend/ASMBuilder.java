@@ -102,6 +102,8 @@ public class ASMBuilder implements IRVisitor {
         } else if (val instanceof IRLocalVar localVar) {
             if (localVar.reg != null) { // register value
                 curBlock.body.add(new ASMMvInst(reg, localVar.reg));
+            } else if (localVar.isAllocaResult){
+                curBlock.body.add(new ASMBinaryInst("addi", reg, "sp", ((IRLocalVar) val).stackOffset));
             } else {
                 curBlock.body.add(new ASMLwInst(reg, "sp", ((IRLocalVar) val).stackOffset));
             }

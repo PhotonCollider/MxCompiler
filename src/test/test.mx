@@ -1,4 +1,20 @@
+/*
+Test Package: Codegen
+Author: 22' Shihan Fang
+Time: 2024-08-13
+Input:
+=== input ===
+
+=== end ===
+Output:
+=== output ===
+=== end ===
+ExitCode: 0
+InstLimit: -1
+*/
+
 int main() {
-    int a = 1;
-    return a - 1;
+    for(int i=0;i<5;++i){
+
+    }
 }
