@@ -79,9 +79,55 @@ point.printPoint:
 	lw	ra, 76(sp)
 	addi	sp, sp, 80
 	ret
-main:
+point.cross:
 	addi	sp, sp, -32
 	sw	ra, 28(sp)
+
+	mv	t1, a1
+	sw	t1, 0(sp)
+
+	sw	a0, 20(sp)
+	sw	a1, 24(sp)
+	li	a0, 12
+	call	builtin.calloc
+	sw	a0, 8(sp)
+	lw	a0, 20(sp)
+	lw	a1, 24(sp)
+
+	call	point.printPoint
+
+	sw	a0, 20(sp)
+	sw	a1, 24(sp)
+	call	point.point
+	lw	a0, 20(sp)
+	lw	a1, 24(sp)
+
+	call	point.printPoint
+
+	lw	t1, 8(sp)
+	sw	t1, 4(sp)
+	lw	t1, 4(sp)
+	sw	t1, 12(sp)
+
+	sw	a0, 20(sp)
+	sw	a1, 24(sp)
+	lw	a0, 12(sp)
+	li	a1, 7
+	li	a2, 7
+	li	a3, 7
+	call	point.set
+	lw	a0, 20(sp)
+	lw	a1, 24(sp)
+
+	lw	t1, 4(sp)
+	sw	t1, 16(sp)
+	lw	a0, 16(sp)
+	lw	ra, 28(sp)
+	addi	sp, sp, 32
+	ret
+main:
+	addi	sp, sp, -64
+	sw	ra, 60(sp)
 	call	global.init
 	li	a0, 12
 	call	builtin.calloc
@@ -89,24 +135,54 @@ main:
 	call	point.point
 	lw	t1, 4(sp)
 	sw	t1, 0(sp)
-	lw	t1, 0(sp)
+	li	a0, 12
+	call	builtin.calloc
+	sw	a0, 12(sp)
+	call	point.point
+	lw	t1, 12(sp)
 	sw	t1, 8(sp)
-	li	t0, 0
-	li	t1, 463
-	sub	t2, t0, t1
-	sw	t2, 12(sp)
-	lw	a0, 8(sp)
-	li	a1, 849
-	lw	a2, 12(sp)
-	li	a3, 480
-	call	point.set
 	lw	t1, 0(sp)
 	sw	t1, 16(sp)
 	lw	a0, 16(sp)
+	li	a1, 1
+	li	a2, 2
+	li	a3, 3
+	call	point.set
+	lw	t1, 8(sp)
+	sw	t1, 20(sp)
+	lw	a0, 20(sp)
+	li	a1, 4
+	li	a2, 5
+	li	a3, 6
+	call	point.set
+	lw	t1, 0(sp)
+	sw	t1, 24(sp)
+	lw	a0, 24(sp)
 	call	point.printPoint
+	lw	t1, 8(sp)
+	sw	t1, 28(sp)
+	lw	a0, 28(sp)
+	call	point.printPoint
+
+    lw  a0, 0(sp)
+    call    point.printPoint
+
+	lw	t1, 0(sp)
+	sw	t1, 32(sp)
+	lw	t1, 8(sp)
+	sw	t1, 36(sp)
+
+	lw	a0, 32(sp)
+	lw	a1, 36(sp)
+	call	point.cross
+	sw	a0, 40(sp)
+
+	lw  a0, 0(sp)
+    call	point.printPoint
+
 	li	a0, 0
-	lw	ra, 28(sp)
-	addi	sp, sp, 32
+	lw	ra, 60(sp)
+	addi	sp, sp, 64
 	ret
 point.set:
 	addi	sp, sp, -64

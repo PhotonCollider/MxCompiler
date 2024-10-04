@@ -446,7 +446,7 @@ public class IRBuilder implements ASTVisitor {
             IRLocalVar res = getNamelessVariable(type.dereference());
             currentBlock.body.add(new IRCallInst(res, "builtin.malloc", new IRIntConst(structDef.struct.sizeInBytes())));
             if (structDef.hasConstructor) {
-                currentBlock.body.add(new IRCallInst(null, className + "." + className));
+                currentBlock.body.add(new IRCallInst(null, className + "." + className, res));
             }
             currentBlock.body.add(new IRStoreInst(res, nxtPtr));
         } else {
@@ -514,7 +514,7 @@ public class IRBuilder implements ASTVisitor {
         IRLocalVar res = getNamelessVariable(new IRPtrType(it.type.toIR()));
         currentBlock.body.add(new IRCallInst(res, "builtin.calloc", new IRIntConst(structDef.struct.sizeInBytes())));
         if (structDef.hasConstructor) {
-            currentBlock.body.add(new IRCallInst(null, it.type + "." + it.type));
+            currentBlock.body.add(new IRCallInst(null, it.type + "." + it.type, res));
         }
         curExprValue = res;
     }

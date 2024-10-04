@@ -38,6 +38,11 @@ class point {
 		y = a_y;
 		z = a_z;
 	}
+	point cross(point other) {
+		point retval = new point;
+		retval.set(7, 7, 7);
+		return retval;
+	}
 	void printPoint() {
 		println("(" + toString(x) + ", " + toString(y) + ", " + toString(z) + ")");
 	}
@@ -45,7 +50,14 @@ class point {
 
 int main() {
 	point a = new point;
-	a.set(849, -463, 480);
+	point b = new point;
+
+	a.set(1, 2, 3);
+	b.set(4, 5, 6);
+
+	a.printPoint();
+
+	a.cross(b).printPoint();
 	a.printPoint();
 	return 0;
 }
