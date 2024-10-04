@@ -16,7 +16,7 @@ public class IRFuncDef extends IRNode {
     public List<IRBasicBlock> body;
     public List<IRLocalVar> args;
     public List<IRLocalVar> localVarSet; // for ASMBuilder
-    public int stackSize;
+    public int stackSize, callSaveOffset;
 
     public IRFuncDef(String name, IRType retType) {
         this.name = name;

@@ -1,79 +1,189 @@
 .text
 	.globl main
+point.printPoint:
+	addi	sp, sp, -80
+	sw	ra, 76(sp)
+	mv	t2, a0
+	addi	t2, t2, 0
+	sw	t2, 0(sp)
+	lw	t0, 0(sp)
+	lw	t1, 0(t0)
+	sw	t1, 4(sp)
+	sw	a0, 60(sp)
+	lw	a0, 4(sp)
+	call	toString
+	sw	a0, 8(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	la	a0, stringLiteral.0
+	lw	a1, 8(sp)
+	call	builtin.string_add
+	sw	a0, 12(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	lw	a0, 12(sp)
+	la	a1, stringLiteral.1
+	call	builtin.string_add
+	sw	a0, 16(sp)
+	lw	a0, 60(sp)
+	mv	t2, a0
+	addi	t2, t2, 4
+	sw	t2, 20(sp)
+	lw	t0, 20(sp)
+	lw	t1, 0(t0)
+	sw	t1, 24(sp)
+	sw	a0, 60(sp)
+	lw	a0, 24(sp)
+	call	toString
+	sw	a0, 28(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	lw	a0, 16(sp)
+	lw	a1, 28(sp)
+	call	builtin.string_add
+	sw	a0, 32(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	lw	a0, 32(sp)
+	la	a1, stringLiteral.2
+	call	builtin.string_add
+	sw	a0, 36(sp)
+	lw	a0, 60(sp)
+	mv	t2, a0
+	addi	t2, t2, 8
+	sw	t2, 40(sp)
+	lw	t0, 40(sp)
+	lw	t1, 0(t0)
+	sw	t1, 44(sp)
+	sw	a0, 60(sp)
+	lw	a0, 44(sp)
+	call	toString
+	sw	a0, 48(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	lw	a0, 36(sp)
+	lw	a1, 48(sp)
+	call	builtin.string_add
+	sw	a0, 52(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	lw	a0, 52(sp)
+	la	a1, stringLiteral.3
+	call	builtin.string_add
+	sw	a0, 56(sp)
+	lw	a0, 60(sp)
+	sw	a0, 60(sp)
+	lw	a0, 56(sp)
+	call	println
+	lw	a0, 60(sp)
+	lw	ra, 76(sp)
+	addi	sp, sp, 80
+	ret
 main:
-	addi	sp, sp, -48
-	sw	ra, 44(sp)
+	addi	sp, sp, -32
+	sw	ra, 28(sp)
 	call	global.init
-	li	a0, 4
-	li	a1, 4
-	call	builtin.calloc_array
+	li	a0, 12
+	call	builtin.calloc
 	sw	a0, 4(sp)
+	call	point.point
 	lw	t1, 4(sp)
 	sw	t1, 0(sp)
 	lw	t1, 0(sp)
 	sw	t1, 8(sp)
-
-	lw	t2, 8(sp)
-	li	t1, 2
-	li	t3, 4
-	mul	t4, t3, t1
-	add	t2, t2, t4
+	li	t0, 0
+	li	t1, 463
+	sub	t2, t0, t1
 	sw	t2, 12(sp)
-
-	lw	t0, 12(sp)
-	li	t1, 2
-	sw	t1, 0(t0)
-
+	lw	a0, 8(sp)
+	li	a1, 849
+	lw	a2, 12(sp)
+	li	a3, 480
+	call	point.set
 	lw	t1, 0(sp)
 	sw	t1, 16(sp)
-
-	la	t0, a
-	lw	t1, 16(sp)
-	sw	t1, 0(t0)
-
-	la	t0, a
-	lw	t1, 0(t0)
-	sw	t1, 20(sp)
-
-	lw	t2, 20(sp)
-	li	t1, 2
-	li	t3, 4
-	mul	t4, t3, t1
-	add	t2, t2, t4
-	sw	t2, 24(sp)
-
-	lw	t0, 24(sp)
-	lw	t1, 0(t0)
-	sw	t1, 28(sp)
-
-	lw	a0, 28(sp)
-	call	toString
-	sw	a0, 32(sp)
-
-	lw	a0, 32(sp)
-	call	println
-
+	lw	a0, 16(sp)
+	call	point.printPoint
 	li	a0, 0
-	lw	ra, 44(sp)
-	addi	sp, sp, 48
+	lw	ra, 28(sp)
+	addi	sp, sp, 32
+	ret
+point.set:
+	addi	sp, sp, -64
+	sw	ra, 60(sp)
+	mv	t1, a1
+	sw	t1, 0(sp)
+	mv	t1, a2
+	sw	t1, 4(sp)
+	mv	t1, a3
+	sw	t1, 8(sp)
+	lw	t1, 0(sp)
+	sw	t1, 12(sp)
+	mv	t2, a0
+	addi	t2, t2, 0
+	sw	t2, 16(sp)
+	lw	t0, 16(sp)
+	lw	t1, 12(sp)
+	sw	t1, 0(t0)
+	lw	t1, 4(sp)
+	sw	t1, 20(sp)
+	mv	t2, a0
+	addi	t2, t2, 4
+	sw	t2, 24(sp)
+	lw	t0, 24(sp)
+	lw	t1, 20(sp)
+	sw	t1, 0(t0)
+	lw	t1, 8(sp)
+	sw	t1, 28(sp)
+	mv	t2, a0
+	addi	t2, t2, 8
+	sw	t2, 32(sp)
+	lw	t0, 32(sp)
+	lw	t1, 28(sp)
+	sw	t1, 0(t0)
+	lw	ra, 60(sp)
+	addi	sp, sp, 64
+	ret
+point.point:
+	addi	sp, sp, -32
+	sw	ra, 28(sp)
+	mv	t2, a0
+	addi	t2, t2, 0
+	sw	t2, 0(sp)
+	lw	t0, 0(sp)
+	li	t1, 0
+	sw	t1, 0(t0)
+	mv	t2, a0
+	addi	t2, t2, 4
+	sw	t2, 4(sp)
+	lw	t0, 4(sp)
+	li	t1, 0
+	sw	t1, 0(t0)
+	mv	t2, a0
+	addi	t2, t2, 8
+	sw	t2, 8(sp)
+	lw	t0, 8(sp)
+	li	t1, 0
+	sw	t1, 0(t0)
+	lw	ra, 28(sp)
+	addi	sp, sp, 32
 	ret
 global.init:
 	addi	sp, sp, -16
 	sw	ra, 12(sp)
-	li	a0, 4
-	li	a1, 4
-	call	builtin.calloc_array
-	sw	a0, 0(sp)
-	la	t0, a
-	lw	t1, 0(sp)
-	sw	t1, 0(t0)
 	lw	ra, 12(sp)
 	addi	sp, sp, 16
 	ret
 
 .data
-a:
-	.word 1
 
 .rodata
+stringLiteral.0:
+	.asciz "("
+stringLiteral.1:
+	.asciz ", "
+stringLiteral.2:
+	.asciz ", "
+stringLiteral.3:
+	.asciz ")"
 

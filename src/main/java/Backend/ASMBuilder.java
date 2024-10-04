@@ -277,9 +277,22 @@ public class ASMBuilder implements IRVisitor {
         curBlock = null;
     }
 
+    void saveARegisters(int limit, int callSaveOffset) {
+        for (int i = 0; i < limit; i++) {
+            addSwInst("a" + i, "sp", callSaveOffset + i * 4, "t0");
+        }
+    }
+
+    void loadARegisters(int limit, int callSaveOffset) {
+        for (int i = 0; i < limit; i++) {
+            addLwInst("a" + i, "sp", callSaveOffset + i * 4, "t0");
+        }
+    }
+
     @Override
     public void visit(IRCallInst irCallInst) {
-        // no need to save cur func args when calling, they are right values in ir and are temporary
+        saveARegisters(Math.min(8, curFunc.args.size()), curFunc.callSaveOffset);
+
         for (int i = 0; i < Math.min(8, irCallInst.args.size()); i++) {
             loadValue("a" + i, irCallInst.args.get(i));
         }
@@ -291,5 +304,7 @@ public class ASMBuilder implements IRVisitor {
         if (irCallInst.result != null) {
             addSwInst("a0", "sp", irCallInst.result.stackOffset, "t0");
         }
+
+        loadARegisters(Math.min(8, curFunc.args.size()), curFunc.callSaveOffset);
     }
 }

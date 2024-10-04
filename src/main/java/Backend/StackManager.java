@@ -35,12 +35,22 @@ public class StackManager implements IRVisitor {
     @Override
     public void visit(IRFuncDef irFuncDef) {
         curFunc = irFuncDef;
-        curSizeSum = 4; // return address
+        curSizeSum = 0;
         curFuncMaxCallArg = 0;
         for (var block : irFuncDef.body) {
             block.accept(this);
         }
-        irFuncDef.stackSize = (curSizeSum + Math.max(curFuncMaxCallArg - 8, 0) * 4 + 15) / 16 * 16;
+        //                      local var    when calling, save a0-a7 on stack     when calling, save extra args on stack    ra    align to 16
+        irFuncDef.stackSize = (curSizeSum + Math.min(8, irFuncDef.args.size()) * 4 + Math.max(curFuncMaxCallArg - 8, 0) * 4 + 4 + 15) / 16 * 16;
+        /*
+                                stackSize(sp)
+        ra                      stackSize-4(sp)
+        <possibly a gap caused by aligning to 16>
+        call save a0-a7         callSaveOffset(sp)
+        local var
+        extra args              0(sp)
+         */
+        irFuncDef.callSaveOffset = curSizeSum + Math.max(curFuncMaxCallArg - 8, 0) * 4;
         int curOffset = Math.max(curFuncMaxCallArg - 8, 0) * 4;
         for (int i = 0; i < irFuncDef.localVarSet.size(); i++) {
             irFuncDef.localVarSet.get(i).stackOffset = curOffset;
