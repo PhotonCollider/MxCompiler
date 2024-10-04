@@ -154,7 +154,7 @@ public class ASMBuilder implements IRVisitor {
     @Override
     public void visit(IRGlobalVarDef irGlobalVarDef) {
         ASMBlock def = new ASMBlock(irGlobalVarDef.variable.name);
-        def.body.add(new ASMWordInst(1));
+        def.body.add(new ASMWordInst());
         prog.data.blocks.add(def);
     }
 
