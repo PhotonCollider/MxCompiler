@@ -1,63 +1,35 @@
 /*
 Test Package: Codegen
-Author: 14' Xingyuan Sun
-Time: 2020-02-03
+Author: 11' Tianxing Jin
+Time: 2020-02-02
 Input:
 === input ===
 === end ===
 Output:
 === output ===
-(0, 0, 0)
-28716325
-7421636
-9980404
-38464544
-1854392
-(7616, 1666188, -1232986)
-(-508, 4119, 3390)
-(562, 1584, 2144)
-(-920, 768, -524)
-(612, -469, -630)
+-66060719 -323398799 -743275679
 
 === end ===
 ExitCode: 0
 InstLimit: -1
-Origin Package: Codegen Pretest-901
+Origin Package: Codegen Pretest-570
 */
-class point {
-	int x;
-	int y;
-	int z;
-	point() {
-		x = 0;
-		y = 0;
-		z = 0;
-	}
-	void set(int a_x, int a_y, int a_z){
-		x = a_x;
-		y = a_y;
-		z = a_z;
-	}
-	point cross(point other) {
-		point retval = new point;
-		retval.set(7, 7, 7);
-		return retval;
-	}
-	void printPoint() {
-		println("(" + toString(x) + ", " + toString(y) + ", " + toString(z) + ")");
-	}
-};
 
-int main() {
-	point a = new point;
-	point b = new point;
+int A = 1;
+int B = 1;
+int C = 1;
 
-	a.set(1, 2, 3);
-	b.set(4, 5, 6);
-
-	a.printPoint();
-
-	a.cross(b).printPoint();
-	a.printPoint();
+int main(){
+    int fuckingTerminator = 0;
+	while (C < (1 << 29) && C > -(1 << 29)){
+	    int lhs = (((((((C - A + B) - (A + B)) + ((C - A + B) - (A + B))) + (((C - A + B) - (A + B)) + (C - A + B))) - ((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B)))) - (((((A + B) + (C - A + B)) - ((A + B) + (C - A + B))) - (((A + B) + (C - A + B)) - (A + B))) + ((((C - A + B) - (A + B)) + (C - A + B)) - (((A + B) + (C - A + B)) - (A + B))))) + ((((((C - A + B) - (A + B)) + ((C - A + B) - (A + B))) + (((C - A + B) - (A + B)) + (C - A + B))) - ((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B)))) - (((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B))) - ((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B))))));
+	    int rhs = (((((((A + B) + (C - A + B)) - ((A + B) + (C - A + B))) - (((A + B) + (C - A + B)) - (A + B))) + ((((C - A + B) - (A + B)) + (C - A + B)) - (((A + B) + (C - A + B)) - (A + B)))) + (((((C - A + B) - (A + B)) + (C - A + B)) - (((A + B) + (C - A + B)) - (A + B))) + ((((C - A + B) - (A + B)) + (C - A + B)) - (((A + B) + (C - A + B)) - (A + B))))) + ((((((C - A + B) - (A + B)) + ((C - A + B) - (A + B))) + (((C - A + B) - (A + B)) + (C - A + B))) - ((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B)))) - (((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B))) - ((((A + B) + (C - A + B)) - (A + B)) + (((C - A + B) - (A + B)) + (C - A + B))))));
+		A = lhs - rhs;
+		println(f"lhs=$lhs$, rhs=$rhs$, lhs-rhs=$lhs-rhs$, A=$A$");
+        if (++fuckingTerminator > 10) {
+        	break;
+        }
+	}
+	println(f"A=$A$, B=$B$, C=$C$\n");
 	return 0;
 }

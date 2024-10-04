@@ -28,6 +28,100 @@ public class ASMBuilder implements IRVisitor {
         return prog;
     }
 
+    // registers t0-t7 are temporary and can be changed at will
+    // lower level util functions can freely use t0-t7, but now we only use t0
+    // other functions (higher level util functions and IRVisitor functions) may not use reg t0
+    // other functions use s0-s11 instead
+
+    // begin util functions
+    //      begin lower level util functions
+    void addAddiInst(String res, String rs1, int imm) {
+        if (-(1 << 11) <= imm && imm < (1 << 11)) {
+            curBlock.body.add(new ASMBinaryInst("addi", res, rs1, imm));
+        } else {
+            curBlock.body.add(new ASMLiInst("t0", imm));
+            curBlock.body.add(new ASMBinaryInst("add", res, "t0", rs1));
+        }
+    }
+
+    // will not modify rs2 and rs1
+    void addSwInst(String rs2, String rs1, int offset) {
+        if (-(1 << 11) <= offset && offset < (1 << 11)) {
+            curBlock.body.add(new ASMSwInst(rs2, rs1, offset));
+        } else {
+            curBlock.body.add(new ASMLiInst("t0", offset));
+            curBlock.body.add(new ASMBinaryInst("add", "t0", "t0", rs1));
+            curBlock.body.add(new ASMSwInst(rs2, "t0", 0));
+        }
+    }
+
+    void addLwInst(String rd, String rs1, int offset) {
+        if (-(1 << 11) <= offset && offset < (1 << 11)) {
+            curBlock.body.add(new ASMLwInst(rd, rs1, offset));
+        } else {
+            curBlock.body.add(new ASMLiInst("t0", offset));
+            curBlock.body.add(new ASMBinaryInst("add", "t0", "t0", rs1));
+            curBlock.body.add(new ASMLwInst(rd, "t0", 0));
+        }
+    }
+
+    void addJumpInst(String label) {
+        curBlock.body.add(new ASMLaInst("t0", label));
+        curBlock.body.add(new ASMJrInst("t0"));
+    }
+
+    void saveARegisters(int limit, int callSaveOffset) {
+        for (int i = 0; i < limit; i++) {
+            addSwInst("a" + i, "sp", callSaveOffset + i * 4);
+        }
+    }
+
+    void loadARegisters(int limit, int callSaveOffset) {
+        for (int i = 0; i < limit; i++) {
+            addLwInst("a" + i, "sp", callSaveOffset + i * 4);
+        }
+    }
+    //      end lower level util functions
+
+    void loadValue(String reg, IRValue val) {
+        if (val instanceof IRBoolConst) {
+            curBlock.body.add(new ASMLiInst(reg, ((IRBoolConst) val).val ? 1 : 0));
+        } else if (val instanceof IRIntConst) {
+            curBlock.body.add(new ASMLiInst(reg, ((IRIntConst) val).val));
+        } else if (val instanceof IRNullConst) {
+            curBlock.body.add(new ASMLiInst(reg, 0));
+        } else if (val instanceof IRGlobalVar) {
+            curBlock.body.add(new ASMLaInst(reg, ((IRGlobalVar) val).name));
+        } else if (val instanceof IRLocalVar localVar) {
+            if (localVar.reg != null) { // register value
+                curBlock.body.add(new ASMMvInst(reg, localVar.reg));
+            } else if (localVar.isStackPointer) {
+                addAddiInst(reg, "sp", ((IRLocalVar) val).stackOffset);
+            } else { // isHeapPointer
+                addLwInst(reg, "sp", ((IRLocalVar) val).stackOffset);
+            }
+        }
+    }
+
+    ASMAddr getAddr(IRValue val, String availableReg) {
+        if (val instanceof IRGlobalVar) {
+            curBlock.body.add(new ASMLaInst(availableReg, ((IRGlobalVar) val).name));
+            return new ASMAddr(availableReg, 0);
+        } else {
+            IRLocalVar localVar = (IRLocalVar) val;
+            // this function is used to get the stack addr of a variable
+            // so val cannot be a register value
+            if (localVar.isStackPointer) {
+                return new ASMAddr("sp", localVar.stackOffset);
+            } else {
+                addLwInst(availableReg, "sp", ((IRLocalVar) val).stackOffset);
+                return new ASMAddr(availableReg, 0);
+            }
+        }
+    }
+    // end util functions
+
+    // begin IRVisitor functions
     @Override
     public void visit(IRProgramNode irProgramNode) {
         ASMBlock blk = new ASMBlock(null);
@@ -68,40 +162,10 @@ public class ASMBuilder implements IRVisitor {
     public void visit(IRFuncDef irFuncDef) {
         curFunc = irFuncDef;
         curBlock = new ASMBlock(irFuncDef.name);
-        addAddiInst("sp", "sp", -irFuncDef.stackSize, "t0");
-        addSwInst("ra", "sp", irFuncDef.stackSize - 4, "t0");
+        addAddiInst("sp", "sp", -irFuncDef.stackSize);
+        addSwInst("ra", "sp", irFuncDef.stackSize - 4);
         for (var irBlock : irFuncDef.body) {
             irBlock.accept(this);
-        }
-    }
-
-    void addAddiInst(String res, String rs1, int imm, String tmp) {
-        if (-(1 << 11) <= imm && imm < (1 << 11)) {
-            curBlock.body.add(new ASMBinaryInst("addi", res, rs1, imm));
-        } else {
-            curBlock.body.add(new ASMLiInst(tmp, imm));
-            curBlock.body.add(new ASMBinaryInst("add", res, tmp, rs1));
-        }
-    }
-
-    // will not modify rs2 and rs1
-    void addSwInst(String rs2, String rs1, int offset, String tmp) {
-        if (-(1 << 11) <= offset && offset < (1 << 11)) {
-            curBlock.body.add(new ASMSwInst(rs2, rs1, offset));
-        } else {
-            curBlock.body.add(new ASMLiInst(tmp, offset));
-            curBlock.body.add(new ASMBinaryInst("add", tmp, tmp, rs1));
-            curBlock.body.add(new ASMSwInst(rs2, tmp, 0));
-        }
-    }
-
-    void addLwInst(String rd, String rs1, int offset, String tmp) {
-        if (-(1 << 11) <= offset && offset < (1 << 11)) {
-            curBlock.body.add(new ASMLwInst(rd, rs1, offset));
-        } else {
-            curBlock.body.add(new ASMLiInst(tmp, offset));
-            curBlock.body.add(new ASMBinaryInst("add", tmp, tmp, rs1));
-            curBlock.body.add(new ASMLwInst(rd, tmp, 0));
         }
     }
 
@@ -110,48 +174,11 @@ public class ASMBuilder implements IRVisitor {
         if (irRetInst.retVal != null) {
             loadValue("a0", irRetInst.retVal);
         }
-        addLwInst("ra", "sp", curFunc.stackSize - 4, "t0");
-        addAddiInst("sp", "sp", curFunc.stackSize, "t0");
+        addLwInst("ra", "sp", curFunc.stackSize - 4);
+        addAddiInst("sp", "sp", curFunc.stackSize);
         curBlock.body.add(new ASMRetInst());
         prog.text.blocks.add(curBlock);
         curBlock = null;
-    }
-
-    void loadValue(String reg, IRValue val) {
-        if (val instanceof IRBoolConst) {
-            curBlock.body.add(new ASMLiInst(reg, ((IRBoolConst) val).val ? 1 : 0));
-        } else if (val instanceof IRIntConst) {
-            curBlock.body.add(new ASMLiInst(reg, ((IRIntConst) val).val));
-        } else if (val instanceof IRNullConst) {
-            curBlock.body.add(new ASMLiInst(reg, 0));
-        } else if (val instanceof IRGlobalVar) {
-            curBlock.body.add(new ASMLaInst(reg, ((IRGlobalVar) val).name));
-        } else if (val instanceof IRLocalVar localVar) {
-            if (localVar.reg != null) { // register value
-                curBlock.body.add(new ASMMvInst(reg, localVar.reg));
-            } else if (localVar.isStackPointer) {
-                addAddiInst(reg, "sp", ((IRLocalVar) val).stackOffset, reg.equals("t0") ? "t1" : "t0");
-            } else { // isHeapPointer
-                addLwInst(reg, "sp", ((IRLocalVar) val).stackOffset, "t0");
-            }
-        }
-    }
-
-    ASMAddr getAddr(IRValue val, String availableReg) {
-        if (val instanceof IRGlobalVar) {
-            curBlock.body.add(new ASMLaInst(availableReg, ((IRGlobalVar) val).name));
-            return new ASMAddr(availableReg, 0);
-        } else {
-            IRLocalVar localVar = (IRLocalVar) val;
-            // this function is used to get the stack addr of a variable
-            // so val cannot be a register value
-            if (localVar.isStackPointer) {
-                return new ASMAddr("sp", localVar.stackOffset);
-            } else {
-                addLwInst(availableReg, "sp", ((IRLocalVar) val).stackOffset, availableReg.equals("t0") ? "t1" : "t0");
-                return new ASMAddr(availableReg, 0);
-            }
-        }
     }
 
     @Override
@@ -166,10 +193,10 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRLoadInst irLoadInst) {
-        ASMAddr addr = getAddr(irLoadInst.ptr, "t0");
-        addLwInst("t1", addr.reg, addr.offset, "t2");
+        ASMAddr addr = getAddr(irLoadInst.ptr, "s0");
+        addLwInst("s1", addr.reg, addr.offset);
         // all variables except 8 function args are on stack
-        addSwInst("t1", "sp", irLoadInst.result.stackOffset, "t0");
+        addSwInst("s1", "sp", irLoadInst.result.stackOffset);
     }
 
     @Override
@@ -194,8 +221,8 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRBinaryInst irBinaryInst) {
-        loadValue("t0", irBinaryInst.lhs);
-        loadValue("t1", irBinaryInst.rhs);
+        loadValue("s0", irBinaryInst.lhs);
+        loadValue("s1", irBinaryInst.rhs);
         String op = switch (irBinaryInst.op) {
             case "sdiv" -> "div";
             case "srem" -> "rem";
@@ -203,50 +230,50 @@ public class ASMBuilder implements IRVisitor {
             case "ashr" -> "sra";
             default -> irBinaryInst.op;
         };
-        curBlock.body.add(new ASMBinaryInst(op, "t2", "t0", "t1"));
-        addSwInst("t2", "sp", irBinaryInst.result.stackOffset, "t0");
+        curBlock.body.add(new ASMBinaryInst(op, "s2", "s0", "s1"));
+        addSwInst("s2", "sp", irBinaryInst.result.stackOffset);
     }
 
     @Override
     public void visit(IRJumpInst irJumpInst) {
-        curBlock.body.add(new ASMJInst(irJumpInst.dest.label));
+        addJumpInst(irJumpInst.dest.label);
         prog.text.blocks.add(curBlock);
         curBlock = null;
     }
 
     @Override
     public void visit(IRIcmpInst irIcmpInst) {
-        loadValue("t0", irIcmpInst.lhs);
-        loadValue("t1", irIcmpInst.rhs);
+        loadValue("s0", irIcmpInst.lhs);
+        loadValue("s1", irIcmpInst.rhs);
         switch (irIcmpInst.cond) {
             case "eq" -> {
-                curBlock.body.add(new ASMBinaryInst("xor", "t2", "t0", "t1"));
-                curBlock.body.add(new ASMBinaryInst("sltiu", "t3", "t2", 1));
+                curBlock.body.add(new ASMBinaryInst("xor", "s2", "s0", "s1"));
+                curBlock.body.add(new ASMBinaryInst("sltiu", "s3", "s2", 1));
             }
             case "ne" -> {
-                curBlock.body.add(new ASMBinaryInst("xor", "t2", "t0", "t1"));
-                curBlock.body.add(new ASMBinaryInst("sltu", "t3", "x0", "t2"));
+                curBlock.body.add(new ASMBinaryInst("xor", "s2", "s0", "s1"));
+                curBlock.body.add(new ASMBinaryInst("sltu", "s3", "x0", "s2"));
             }
-            case "slt" -> curBlock.body.add(new ASMBinaryInst("slt", "t3", "t0", "t1"));
+            case "slt" -> curBlock.body.add(new ASMBinaryInst("slt", "s3", "s0", "s1"));
             case "sle" -> {
-                curBlock.body.add(new ASMBinaryInst("slt", "t2", "t1", "t0"));
-                curBlock.body.add(new ASMBinaryInst("sltiu", "t3", "t2", 1));
+                curBlock.body.add(new ASMBinaryInst("slt", "s2", "s1", "s0"));
+                curBlock.body.add(new ASMBinaryInst("sltiu", "s3", "s2", 1));
             }
-            case "sgt" -> curBlock.body.add(new ASMBinaryInst("slt", "t3", "t1", "t0"));
+            case "sgt" -> curBlock.body.add(new ASMBinaryInst("slt", "s3", "s1", "s0"));
             case "sge" -> {
-                curBlock.body.add(new ASMBinaryInst("slt", "t2", "t0", "t1"));
-                curBlock.body.add(new ASMBinaryInst("sltiu", "t3", "t2", 1));
+                curBlock.body.add(new ASMBinaryInst("slt", "s2", "s0", "s1"));
+                curBlock.body.add(new ASMBinaryInst("sltiu", "s3", "s2", 1));
             }
         }
-        addSwInst("t3", "sp", irIcmpInst.result.stackOffset, "t0");
+        addSwInst("s3", "sp", irIcmpInst.result.stackOffset);
     }
 
     @Override
     public void visit(IRStoreInst irStoreInst) {
-        ASMAddr addr = getAddr(irStoreInst.ptr, "t0");
-        loadValue("t1", irStoreInst.value);
+        ASMAddr addr = getAddr(irStoreInst.ptr, "s0");
+        loadValue("s1", irStoreInst.value);
         // all variables except 8 function args are on stack
-        addSwInst("t1", addr.reg, addr.offset, "t0");
+        addSwInst("s1", addr.reg, addr.offset);
     }
 
     @Override
@@ -256,37 +283,31 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(IRGetelementptrInst irGetelementptrInst) {
-        loadValue("t2", irGetelementptrInst.ptr);
+        loadValue("s2", irGetelementptrInst.ptr);
         if (irGetelementptrInst.id2 == -1) { // simple move
-            loadValue("t1", irGetelementptrInst.id1);
-            curBlock.body.add(new ASMLiInst("t3", ((IRPtrType) irGetelementptrInst.ptr.type).dereference().sizeInBytes()));
-            curBlock.body.add(new ASMBinaryInst("mul", "t4", "t3", "t1"));
-            curBlock.body.add(new ASMBinaryInst("add", "t2", "t2", "t4"));
+            loadValue("s1", irGetelementptrInst.id1);
+            curBlock.body.add(new ASMLiInst("s3", ((IRPtrType) irGetelementptrInst.ptr.type).dereference().sizeInBytes()));
+            curBlock.body.add(new ASMBinaryInst("mul", "s4", "s3", "s1"));
+            curBlock.body.add(new ASMBinaryInst("add", "s2", "s2", "s4"));
         } else {
-            addAddiInst("t2", "t2", 4 * irGetelementptrInst.id2, "t1");
+            addAddiInst("s2", "s2", 4 * irGetelementptrInst.id2);
         }
-        addSwInst("t2", "sp", irGetelementptrInst.result.stackOffset, "t1");
+        addSwInst("s2", "sp", irGetelementptrInst.result.stackOffset);
     }
 
     @Override
     public void visit(IRBrInst irBrInst) {
-        loadValue("t0", irBrInst.cond);
-        curBlock.body.add(new ASMBgtzInst("t0", irBrInst.trueBlock.label));
-        curBlock.body.add(new ASMJInst(irBrInst.falseBlock.label));
+        loadValue("s0", irBrInst.cond);
+        // just for fun XDD
+        // hyperDash is a celeste tech to jump further
+        ASMBlock hyperDash = new ASMBlock(null, true);
+        curBlock.body.add(new ASMBgtzInst("s0", hyperDash.label));
+        addJumpInst(irBrInst.falseBlock.label);
+        prog.text.blocks.add(curBlock);
+        curBlock = hyperDash;
+        addJumpInst(irBrInst.trueBlock.label);
         prog.text.blocks.add(curBlock);
         curBlock = null;
-    }
-
-    void saveARegisters(int limit, int callSaveOffset) {
-        for (int i = 0; i < limit; i++) {
-            addSwInst("a" + i, "sp", callSaveOffset + i * 4, "t0");
-        }
-    }
-
-    void loadARegisters(int limit, int callSaveOffset) {
-        for (int i = 0; i < limit; i++) {
-            addLwInst("a" + i, "sp", callSaveOffset + i * 4, "t0");
-        }
     }
 
     @Override
@@ -297,12 +318,12 @@ public class ASMBuilder implements IRVisitor {
             loadValue("a" + i, irCallInst.args.get(i));
         }
         for (int i = 8; i < irCallInst.args.size(); i++) {
-            loadValue("t0", irCallInst.args.get(i));
-            addSwInst("t0", "sp", 4 * (i - 8), "t1");
+            loadValue("s0", irCallInst.args.get(i));
+            addSwInst("s0", "sp", 4 * (i - 8));
         }
         curBlock.body.add(new ASMCallInst(irCallInst.funcName));
         if (irCallInst.result != null) {
-            addSwInst("a0", "sp", irCallInst.result.stackOffset, "t0");
+            addSwInst("a0", "sp", irCallInst.result.stackOffset);
         }
 
         loadARegisters(Math.min(8, curFunc.args.size()), curFunc.callSaveOffset);
